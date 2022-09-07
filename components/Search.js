@@ -34,12 +34,6 @@ return (
   </div>
   </div> 
   </div>
-  <div className="w-900 pt-6">
-    <div className="">
-
-    </div>
-
-  </div>
   </div>
 )
 }
