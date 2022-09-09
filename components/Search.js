@@ -34,6 +34,19 @@ return (
   </div>
   </div> 
   </div>
+  <div className=" w-900 pt-6 pb-6  ">
+    <div className="grid grid-cols-[minmax(0,3fr)_minmax(0,5fr)] gap-4">
+      <div> Sep 9, 10:31am</div>
+      <div>Toshkent Shahri, UZ</div>
+      <div className="flex flex-row whitespace-nowrap"> 
+        <img></img>
+        <span>26°C</span>
+      </div>
+      <div>Feels like 25°C. Few clouds. Light breeze</div>
+      <ul className="mt-1 mb-0 pl-4 pr-4 w-96">
+      </ul>
+    </div>
+  </div>
   </div>
 )
 }
