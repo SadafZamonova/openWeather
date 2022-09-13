@@ -1,36 +1,45 @@
+import { FC, useState, useEffect } from "react";
+import { weatherData } from "../types";
+import { GetServerSideProps } from "next";
 
-import { useEffect, useState } from "react";
 
-interface weatherData {
-    base: string
-    clouds: {all: number}
-    cod:number
-    coord: {lon: -0.1257, lat: 51.5085}
-    dt:1662983100
-    id:2643743
-    main:{temp: 297.36, feels_like: 297.46, temp_min: 295.85, temp_max: 298.99, pressure: 1011, …}
-    name:"London"
-    sys:{type: 2, id: 2075535, country: 'GB', sunrise: 1662960626, sunset: 1663007014}
-    timezone:3600
-    visibility:10000
-    weather:[{…}]
-    wind:{speed: 3.09, deg: 210}
-}
+// export const getServersideProps: GetServerSideProps = async () => {
+//   const response = await fetch("https://api.openweathermap.org/data/2.5/weather?q=London&appid=30de99d12bc5906411ce85c94ebcdae0")
+// const data = await response.json();
+// console.log(data)
 
-const Search = ({ }) => {
-const [data, setData] = useState();
+// return {
+//   props: {data},
+// }
+// };
 
-useEffect (() => {
-  const fetchData = async () =>  {
-const res = await fetch("https://api.openweathermap.org/data/2.5/weather?q=London&appid=30de99d12bc5906411ce85c94ebcdae0")
-const data: weatherData = await res.json();
 
-setData(data)
-console.log(data)
+let ss = 0;
+const Search = () => {
+const [data, setData] = useState()
+
+
+useEffect(() =>{
+  const fetchData = async () => {
+    const response = await fetch("https://api.openweathermap.org/data/2.5/weather?q=London&appid=30de99d12bc5906411ce85c94ebcdae0")
+    const info = await response.json();
+    ss = info.timezone
+    console.log(info, ss)
+    setData(info)
   }
   fetchData()
-}, [])
+},[]);
 
+
+const time = new Date();
+const timeZoneApi = ss/3600;
+const timeZone = +time.getUTCHours();
+const hour = (+time.getHours() - timeZone) + timeZoneApi;
+const min = time.getMinutes()
+const day = time.getDate()
+const month = time.toLocaleString('en', { month: 'long' });
+const res = `${day} ${month} ${hour}:${min} ${timeZoneApi}UTC`;
+const temp = 
 
 
 
@@ -46,14 +55,13 @@ return (
           placeholder="Search city"
           aria-label="Search"
           aria-describedby="button-addon2"
-          // onChange={filterInfoChange}
         />
         <button className="bg-black text-searchbg rounded-r-md w-20">Search</button>
       </div>  
     </div>
     <div className="flex flex-row justify-end">
     <div className=" flex items-center justify-center cursor-pointer ml-24 p-2 bg-#ececed">
-      <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m3 11l19-9l-9 19l-2-8l-8-2z"/></svg>
+      {/* <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m3 11l19-9l-9 19l-2-8l-8-2z"/></svg> */}
       </div>
     <span className="text-xs bg-#ececed w-40 pt-2 mr-4 ml-4">Different Weather?</span>
     <div className="flex flex-row bg-#ececed relative">
@@ -72,16 +80,17 @@ return (
   <div className=" w-900 pt-6 pb-6  px-4   ">
     <div className="grid grid-cols-[minmax(0,3fr)_minmax(0,5fr)] gap-4">
       <div>
-        {(data) !== undefined ?
-        // <div key={id} className="text-red-600"> Sep 9, 10:31am</div>
-      <div id={`${data.id}`} className="text-2xl font-bold pb-8">{data.name}</div>
-      : ''}
+        {/* {data && data.map(({id, name}) => ( */}
+      <div  className="text-red-600"> {res}</div>
+      <div className="text-2xl font-bold pb-8">{data?.name}</div>
+        {/* )) 
+      } */}
       
       <div className="flex flex-row whitespace-nowrap"> 
         <img></img>
         <span className="text-4xl pb-3">26°C</span>
       </div>
-      <div className="font-bold">Feels like 25°C. Few clouds. Light breeze</div>
+      <div className="font-bold">{data?.main?.feels_like}</div>
       <ul className="flex flex-wrap  mt-1 mb-0 pl-4 pr-4 w-96 ">
         <li className="flex items-center flex-nowrap mr-16">3.1m/s NW</li>
         <li className="flex items-center flex-nowrap  mr-16">1018hPa</li>
