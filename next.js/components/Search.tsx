@@ -1,6 +1,7 @@
 import { FC, useState, useEffect } from "react";
 import { weatherData } from "../types";
 import { GetServerSideProps } from "next";
+import dynamic from "next/dynamic";
 
 
 // export const getServersideProps: GetServerSideProps = async () => {
@@ -39,9 +40,10 @@ const min = time.getMinutes()
 const day = time.getDate()
 const month = time.toLocaleString('en', { month: 'long' });
 const res = `${day} ${month} ${hour}:${min} ${timeZoneApi}UTC`;
-const temp = 
 
-
+const MapWithNoSSR = dynamic(() => import("./map"), {
+  ssr: false
+});
 
 return (
   <div>
@@ -101,7 +103,9 @@ return (
       </ul>
     </div>
     <div>
-      <div className="relative"></div>  
+      <div className="relative">
+      <MapWithNoSSR />
+        </div>  
     </div> 
     </div>
   </div>
