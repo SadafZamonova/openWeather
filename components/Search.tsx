@@ -2,6 +2,7 @@ import { FC, useState, useEffect } from "react";
 import { weatherData } from "../types";
 import { GetServerSideProps } from "next";
 import dynamic from "next/dynamic";
+import axios from "axios";
 
 
 // export const getServersideProps: GetServerSideProps = async () => {
@@ -18,15 +19,15 @@ import dynamic from "next/dynamic";
 let ss = 0;
 const Search = () => {
 const [data, setData] = useState()
-
+const url = 'https://api.openweathermap.org/data/2.5/weather?q=London&appid=30de99d12bc5906411ce85c94ebcdae0'
 
 useEffect(() =>{
   const fetchData = async () => {
-    const response = await fetch("https://api.openweathermap.org/data/2.5/weather?q=London&appid=30de99d12bc5906411ce85c94ebcdae0")
-    const info = await response.json();
-    ss = info.timezone
-    console.log(info, ss)
-    setData(info)
+    const response: weatherData =  await axios.get(url)
+    // const info = await response.json();
+    ss =  response.timezone
+    console.log( response, ss)
+    setData(response)
   }
   fetchData()
 },[]);
