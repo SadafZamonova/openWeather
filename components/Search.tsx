@@ -20,7 +20,7 @@ let ss = 0;
 const Search = () => {
   const [names, setNames] = useState('');
   const [data, setData] = useState<WeatherData>();
-  // const url = ;
+  const url = `https://api.openweathermap.org/data/2.5/weather?q=${names}&appid=30de99d12bc5906411ce85c94ebcdae0`;
 
   // const textValue = value.
 
@@ -34,15 +34,17 @@ const Search = () => {
   //   fetchData()
   // }, [names]);
 
-  const addNames = async () => {
+  const addNames = async (e: MouseEvent) => {
     try {
-      const res = await axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${names}&appid=30de99d12bc5906411ce85c94ebcdae0`);
+      const res = await axios.get(url);
+      ss = res.data.timezone;
       setData(res.data)
       console.log(res.data)
     } catch (error) {
       console.log(error)
     }
 
+    setNames((e.target as HTMLInputElement).value)
   }
 
 
@@ -92,7 +94,7 @@ const Search = () => {
                 onChange={(e) => setNames(e.target.value)}
                 value={names}
               />
-              <button className="bg-black text-searchbg rounded-r-md w-20" onClick={() => addNames()} >Search</button>
+              <button className="bg-black text-searchbg rounded-r-md w-20" onClick={(e) => addNames(e)} >Search</button>
 
             </div>
           </div>
