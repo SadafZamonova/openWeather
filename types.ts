@@ -1,4 +1,4 @@
-export interface weatherData {
+export interface WeatherData {
     base: string
     clouds: {all: number}
     cod:number
