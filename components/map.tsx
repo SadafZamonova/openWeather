@@ -6,16 +6,17 @@ import "leaflet-defaulticon-compatibility";
 const Map = () => {
   return (
     <MapContainer
-      center={[40.8054, -74.0241]}
-      zoom={14}
+      center={[40.8054, 69.0241]}
+      // center={[lat, leng]}
+      zoom={7}
       scrollWheelZoom={false}
-      style={{ height: "100%", width: "100%" }}
+      style={{ height: "200px", width: "500px" }}
     >
-      {/* <TileLayer
-        url={`https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/256/{z}/{x}/{y}@2x?access_token=${process.env.MAPBOX_API_key}`}
-        attribution='Map data &copy; <a href=&quot;https://www.openstreetmap.org/&quot;>OpenStreetMap</a> contributors, <a href=&quot;https://creativecommons.org/licenses/by-sa/2.0/&quot;>CC-BY-SA</a>, Imagery &copy; <a href=&quot;https://www.mapbox.com/&quot;>Mapbox</a>'
-      /> */}
-      <Marker position={[40.8054, -74.0241]} draggable={true} >
+      <TileLayer
+         attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+      />
+      <Marker position={[40.8054, 69.0241]} draggable={true} >
         <Popup>Hey ! I live here</Popup>
       </Marker>
     </MapContainer>
