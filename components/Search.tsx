@@ -1,18 +1,17 @@
 import { FC, useState, useEffect, useDebugValue, MouseEvent } from "react";
 import { WeatherData } from "../types";
-import { GetServerSideProps } from "next";
 import dynamic from "next/dynamic";
 import axios from "axios";
-import Map from './map';
+// import Map from './map';
 
 
 let zeroTimeZone = 0;
-const Search = (initialState:any) => {
+let zeroVisibility = 0;
+const Search = (initialState: any) => {
   const [names, setNames] = useState('');
   const [data, setData] = useState<WeatherData>(initialState);
   const url = `https://api.openweathermap.org/data/2.5/weather?q=${names}&units=metric&appid=30de99d12bc5906411ce85c94ebcdae0`;
-  
-  // const textValue = value.
+
 
   // useEffect(() => {
   //   const fetchData = async () => {
@@ -25,20 +24,22 @@ const Search = (initialState:any) => {
   // }, [names]);
 
   useEffect(() => {
-    navigator.geolocation?.getCurrentPosition( async (cds) => {
+    navigator.geolocation?.getCurrentPosition(async (cds) => {
       const res = await axios.get(`https://api.openweathermap.org/data/2.5/weather?lat=${cds.coords.latitude}&lon=${cds.coords.longitude}&units=metric&appid=30de99d12bc5906411ce85c94ebcdae0`)
       zeroTimeZone = res.data.timezone;
+      zeroVisibility = res.data.visibility;
       setData(res.data)
     }, (err) => {
       console.log("err", err)
     });
-    }, [])
+  }, [])
 
   const addNames = async (e: MouseEvent) => {
     try {
       const res = await axios.get(url);
       zeroTimeZone = res.data.timezone;
       setData(res.data)
+      console.log(res.data)
     } catch (error) {
       console.log(error)
     }
@@ -47,7 +48,7 @@ const Search = (initialState:any) => {
   }
 
 
- const  myLocation = async () => {
+  const myLocation = async () => {
     navigator.geolocation?.getCurrentPosition(async (cds) => {
       const res = await axios.get(`https://api.openweathermap.org/data/2.5/weather?lat=${cds.coords.latitude}&lon=${cds.coords.longitude}&units=metric&appid=30de99d12bc5906411ce85c94ebcdae0`)
       zeroTimeZone = res.data.timezone;
@@ -57,24 +58,23 @@ const Search = (initialState:any) => {
     }, (err) => {
       console.log("err", err)
     });
-    }
+  }
 
-
+  const visibility = zeroVisibility / 1000;
   const time = new Date();
-  console.log(time)
   const timeZoneApi = zeroTimeZone / 3600;
-  console.log(time.getHours())
-  const hour = time.getUTCHours()+ timeZoneApi
+  const hour = time.getUTCHours() + timeZoneApi
   const min = time.getMinutes()
   const day = time.getDate()
   const month = time.toLocaleString('en', { month: 'long' });
   const res = `${day} ${month} ${hour}:${min} ${timeZoneApi}UTC`;
 
+
   const MapWithNoSSR = dynamic(() => import("./map"), {
     ssr: false
   });
 
-  
+
 
   return (
     <div>
@@ -97,7 +97,7 @@ const Search = (initialState:any) => {
           </div>
           <div className="flex flex-row justify-end">
             <div className=" flex items-center justify-center cursor-pointer ml-24 p-2 bg-#ececed">
-              <button  onClick={() => myLocation()}>геолокация</button>
+              <button onClick={() => myLocation()}>геолокация</button>
               {/* <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m3 11l19-9l-9 19l-2-8l-8-2z" onClick={() => myLocation()}
               /></svg> */}
             </div>
@@ -118,11 +118,8 @@ const Search = (initialState:any) => {
         <div className=" w-900 pt-6 pb-6  px-4   ">
           <div className="grid grid-cols-[minmax(0,3fr)_minmax(0,5fr)] gap-4">
             <div>
-              {/* {data && data.map(({id, name}) => ( */}
               <div className="text-red-600"> {res}</div>
               <div className="text-2xl font-bold pb-8">{data?.name}</div>
-              {/* )) 
-      } */}
 
               <div className="flex flex-row whitespace-nowrap">
                 <img></img>
@@ -130,12 +127,12 @@ const Search = (initialState:any) => {
               </div>
               <div className="font-bold">Feels like {Math.round(data?.main?.feels_like)} °C. </div>
               <ul className="flex flex-wrap  mt-1 mb-0 pl-4 pr-4 w-96 ">
-                <li className="flex items-center flex-nowrap mr-16">3.1m/s NW</li>
-                <li className="flex items-center flex-nowrap  mr-16">1018hPa</li>
-                <li className="flex items-center flex-nowrap  mr-16">Humidity:22%</li>
+                <li className="flex items-center flex-nowrap mr-16">{data?.wind?.speed}m/s WNW</li>
+                <li className="flex items-center flex-nowrap  mr-16">{data?.main?.pressure}hPa</li>
+                <li className="flex items-center flex-nowrap  mr-16">Humidity: {data?.main?.humidity}%</li>
                 <li className="flex items-center flex-nowrap  mr-16">UV:4</li>
                 <li className="flex items-center flex-nowrap  mr-16">Dew point:-2°C</li>
-                <li className="flex items-center flex-nowrap  mr-16">Visibility:7.0km</li>
+                <li className="flex items-center flex-nowrap  mr-16">Visibility:{visibility}km</li>
               </ul>
             </div>
             <div>
