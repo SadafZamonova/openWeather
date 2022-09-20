@@ -1,34 +1,41 @@
 import { FC, useState, useEffect, useDebugValue, MouseEvent } from "react";
 import { WeatherData } from "../types";
 import dynamic from "next/dynamic";
-import axios from "axios";
-// import Map from './map';
-
+// import axios from "axios";
+import weatherApi from "../axios";
+import { Map } from "leaflet";
+const MapWithNoSSR = dynamic(() => import("./map"), {
+  ssr: false
+});
 
 let zeroTimeZone = 0;
 let zeroVisibility = 0;
 const Search = (initialState: any) => {
   const [names, setNames] = useState('');
+  const [loading, setLoading] = useState(false)
   const [data, setData] = useState<WeatherData>(initialState);
   const url = `https://api.openweathermap.org/data/2.5/weather?q=${names}&units=metric&appid=30de99d12bc5906411ce85c94ebcdae0`;
+  const appid = '30de99d12bc5906411ce85c94ebcdae0'
 
-
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     const response = await axios.get(url);
-  //     ss = response.data.timezone;
-  //     console.log(response, ss)
-  //     setData(response.data)
-  //   }
-  //   fetchData()
-  // }, [names]);
 
   useEffect(() => {
     navigator.geolocation?.getCurrentPosition(async (cds) => {
-      const res = await axios.get(`https://api.openweathermap.org/data/2.5/weather?lat=${cds.coords.latitude}&lon=${cds.coords.longitude}&units=metric&appid=30de99d12bc5906411ce85c94ebcdae0`)
+      setLoading(true)
+      const res = await weatherApi.get('/weather', {
+        params: {
+          q: names,
+          lat: cds.coords.latitude,
+          lon: cds.coords.longitude,
+          units: 'metric',
+          appid: appid,
+        },
+      }
+      )
+
       zeroTimeZone = res.data.timezone;
       zeroVisibility = res.data.visibility;
       setData(res.data)
+      setLoading(false)
     }, (err) => {
       console.log("err", err)
     });
@@ -36,7 +43,13 @@ const Search = (initialState: any) => {
 
   const addNames = async (e: MouseEvent) => {
     try {
-      const res = await axios.get(url);
+      const res = await weatherApi.get('/weather', {
+        params: {
+          q: names,
+          units: 'metric',
+          appid: appid,
+        },
+      })
       zeroTimeZone = res.data.timezone;
       setData(res.data)
       console.log(res.data)
@@ -50,7 +63,16 @@ const Search = (initialState: any) => {
 
   const myLocation = async () => {
     navigator.geolocation?.getCurrentPosition(async (cds) => {
-      const res = await axios.get(`https://api.openweathermap.org/data/2.5/weather?lat=${cds.coords.latitude}&lon=${cds.coords.longitude}&units=metric&appid=30de99d12bc5906411ce85c94ebcdae0`)
+      const res = await weatherApi.get('/weather', {
+        params: {
+          q: names,
+          lat: cds.coords.latitude,
+          lon: cds.coords.longitude,
+          units: 'metric',
+          appid: appid,
+        },
+      }
+      )
       zeroTimeZone = res.data.timezone;
       setData(res.data)
       console.log(res.data)
@@ -70,9 +92,7 @@ const Search = (initialState: any) => {
   const res = `${day} ${month} ${hour}:${min} ${timeZoneApi}UTC`;
 
 
-  const MapWithNoSSR = dynamic(() => import("./map"), {
-    ssr: false
-  });
+
 
 
 
