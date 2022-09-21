@@ -6,7 +6,10 @@ import { Props } from "../types";
 
 
 
-const LeafletMap: React.FC<Props> = ({setMap}) => {
+
+
+
+const LeafletMap: React.FC<Props> = ({mapRef, position} ) => {
 
   
   return (
@@ -15,13 +18,13 @@ const LeafletMap: React.FC<Props> = ({setMap}) => {
       zoom={7}
       scrollWheelZoom={false}
       style={{ height: "25vh", width: "500px" }}
-      ref={setMap}
+      ref={mapRef}
     >
       <TileLayer
         attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      <Marker position={[40.8054, 69.0241]} draggable={true} >
+      <Marker position={position} draggable={true} >
         <Popup>Hey ! I live here</Popup>
       </Marker>
     </MapContainer>

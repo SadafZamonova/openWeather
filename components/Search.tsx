@@ -1,8 +1,8 @@
-import { FC, useState, useEffect, useDebugValue, MouseEvent } from "react";
+import { useState, useEffect, MouseEvent, useRef } from "react";
 import { WeatherData } from "../types";
 import dynamic from "next/dynamic";
 import weatherApi from "../axios";
-import { Map } from "leaflet";
+import { latLng, Map } from "leaflet";
 
 const MapWithNoSSR = dynamic(() => import("./map"), {
   ssr: false
@@ -14,33 +14,38 @@ const Search = (initialState: any) => {
   const [names, setNames] = useState('');
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<WeatherData>(initialState);
-  const [map, setMap] = useState<Map|null>(null);
+  const [mapPosition, setMapPosition] = useState<number[]>([])
+  // const []
+  // const [map, setMap] = useState<Map | null>(null);
+  const mapRef = useRef<Map | null>(null)
   const appid = '30de99d12bc5906411ce85c94ebcdae0'
-
 
   useEffect(() => {
     navigator.geolocation?.getCurrentPosition(async (cds) => {
+      const lat = cds.coords.latitude;
+      const lng = cds.coords.longitude;
       setLoading(true)
       const res = await weatherApi.get('/weather', {
         params: {
           q: names,
-          lat: cds.coords.latitude,
-          lon: cds.coords.longitude,
+          lat: lat,
+          lon: lng,
           units: 'metric',
           appid: appid,
         },
       }
       )
-
       zeroTimeZone = res.data.timezone;
       zeroVisibility = res.data.visibility;
+
       setData(res.data)
-      if(map) {
-        map.flyTo({
-          lat: res.data.coord.lat,
-          lng: res.data.coord.lon
-        })
-      }
+      setMapPosition([lat, lng])
+      {mapRef.current?.flyTo({
+          lat: lat,
+          lng: lng
+        })}
+        
+    
       setLoading(false)
     }, (err) => {
       console.log("err", err)
@@ -58,12 +63,12 @@ const Search = (initialState: any) => {
       })
       zeroTimeZone = res.data.timezone;
       setData(res.data)
-      if(map) {
-        map.flyTo({
-          lat: res.data.coord.lat,
-          lng: res.data.coord.lon
-        })
-      }
+      console.log(res.data)
+      setMapPosition([res.data.coord.lat, res.data.coord.lon ])
+      mapRef.current?.flyTo({
+        lat: res.data.coord.lat,
+        lng: res.data.coord.lon
+      })
       console.log(res.data)
     } catch (error) {
       console.log(error)
@@ -87,12 +92,11 @@ const Search = (initialState: any) => {
       )
       zeroTimeZone = res.data.timezone;
       setData(res.data)
-      if(map) {
-        map.flyTo({
-          lat: res.data.coord.lat,
-          lng: res.data.coord.lon
-        })
-      }
+      setMapPosition([res.data.coord.lat, res.data.coord.lon ])
+      mapRef.current?.flyTo({
+        lat: res.data.coord.lat,
+        lng: res.data.coord.lon
+      })
       console.log(res.data)
 
     }, (err) => {
@@ -111,9 +115,9 @@ const Search = (initialState: any) => {
   const weather = data?.weather?.length ? data.weather[0] : null;
 
 
-if(loading) {
-  return <div className="flex justify-center mt-10"><h1 className="text-white">Loading...</h1></div>
-}
+  if (loading) {
+    return <div className="flex justify-center mt-10"><h1 className="text-white">Loading...</h1></div>
+  }
 
   return (
     <div>
@@ -165,7 +169,7 @@ if(loading) {
                 <span className="text-4xl pb-3">{Math.round(data?.main?.temp)}°C </span>
               </div>
               <div className="font-bold flex ">Feels like {Math.round(data?.main?.feels_like)} °C. {weather ? <div className="font-normal"> {weather.description}  </div> : null} </div>
-             
+
               <ul className="flex flex-wrap  mt-1 mb-0 pl-4 pr-4 w-96 ">
                 <li className="flex items-center flex-nowrap mr-16">{data?.wind?.speed}m/s WNW</li>
                 <li className="flex items-center flex-nowrap  mr-16">{data?.main?.pressure}hPa</li>
@@ -177,7 +181,7 @@ if(loading) {
             </div>
             <div>
               <div className="relative">
-                <MapWithNoSSR setMap={setMap}  />
+                <MapWithNoSSR mapRef={mapRef} position={mapPosition} />
               </div>
             </div>
           </div>

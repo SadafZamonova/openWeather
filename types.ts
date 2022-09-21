@@ -1,4 +1,5 @@
 import { Map } from "leaflet";
+import { MutableRefObject } from "react";
 
 export interface WeatherData {
     base: string
@@ -24,5 +25,6 @@ export interface WeatherData {
 
 
 export interface Props {
-    setMap: (m: Map) => void
+    mapRef: MutableRefObject<Map | null>,
+    position: any,
   }
