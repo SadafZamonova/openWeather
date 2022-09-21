@@ -1,9 +1,9 @@
 import { FC, useState, useEffect, useDebugValue, MouseEvent } from "react";
 import { WeatherData } from "../types";
 import dynamic from "next/dynamic";
-// import axios from "axios";
 import weatherApi from "../axios";
 import { Map } from "leaflet";
+
 const MapWithNoSSR = dynamic(() => import("./map"), {
   ssr: false
 });
@@ -12,9 +12,9 @@ let zeroTimeZone = 0;
 let zeroVisibility = 0;
 const Search = (initialState: any) => {
   const [names, setNames] = useState('');
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
   const [data, setData] = useState<WeatherData>(initialState);
-  const url = `https://api.openweathermap.org/data/2.5/weather?q=${names}&units=metric&appid=30de99d12bc5906411ce85c94ebcdae0`;
+  const [map, setMap] = useState<Map|null>(null);
   const appid = '30de99d12bc5906411ce85c94ebcdae0'
 
 
@@ -35,6 +35,12 @@ const Search = (initialState: any) => {
       zeroTimeZone = res.data.timezone;
       zeroVisibility = res.data.visibility;
       setData(res.data)
+      if(map) {
+        map.flyTo({
+          lat: res.data.coord.lat,
+          lng: res.data.coord.lon
+        })
+      }
       setLoading(false)
     }, (err) => {
       console.log("err", err)
@@ -52,6 +58,12 @@ const Search = (initialState: any) => {
       })
       zeroTimeZone = res.data.timezone;
       setData(res.data)
+      if(map) {
+        map.flyTo({
+          lat: res.data.coord.lat,
+          lng: res.data.coord.lon
+        })
+      }
       console.log(res.data)
     } catch (error) {
       console.log(error)
@@ -75,6 +87,12 @@ const Search = (initialState: any) => {
       )
       zeroTimeZone = res.data.timezone;
       setData(res.data)
+      if(map) {
+        map.flyTo({
+          lat: res.data.coord.lat,
+          lng: res.data.coord.lon
+        })
+      }
       console.log(res.data)
 
     }, (err) => {
@@ -90,11 +108,12 @@ const Search = (initialState: any) => {
   const day = time.getDate()
   const month = time.toLocaleString('en', { month: 'long' });
   const res = `${day} ${month} ${hour}:${min} ${timeZoneApi}UTC`;
+  const weather = data?.weather?.length ? data.weather[0] : null;
 
 
-
-
-
+if(loading) {
+  return <div className="flex justify-center mt-10"><h1 className="text-white">Loading...</h1></div>
+}
 
   return (
     <div>
@@ -145,7 +164,8 @@ const Search = (initialState: any) => {
                 <img></img>
                 <span className="text-4xl pb-3">{Math.round(data?.main?.temp)}°C </span>
               </div>
-              <div className="font-bold">Feels like {Math.round(data?.main?.feels_like)} °C. </div>
+              <div className="font-bold flex ">Feels like {Math.round(data?.main?.feels_like)} °C. {weather ? <div className="font-normal"> {weather.description}  </div> : null} </div>
+             
               <ul className="flex flex-wrap  mt-1 mb-0 pl-4 pr-4 w-96 ">
                 <li className="flex items-center flex-nowrap mr-16">{data?.wind?.speed}m/s WNW</li>
                 <li className="flex items-center flex-nowrap  mr-16">{data?.main?.pressure}hPa</li>
@@ -157,7 +177,7 @@ const Search = (initialState: any) => {
             </div>
             <div>
               <div className="relative">
-                <MapWithNoSSR />
+                <MapWithNoSSR setMap={setMap}  />
               </div>
             </div>
           </div>

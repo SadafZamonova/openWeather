@@ -1,3 +1,5 @@
+import { Map } from "leaflet";
+
 export interface WeatherData {
     base: string
     clouds: {all: number}
@@ -19,3 +21,8 @@ export interface WeatherData {
     }[]
     wind:{speed: number, deg: number}
 }
+
+
+export interface Props {
+    setMap: (m: Map) => void
+  }

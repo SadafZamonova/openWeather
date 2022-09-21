@@ -2,15 +2,20 @@ import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
 import "leaflet-defaulticon-compatibility";
+import { Props } from "../types";
 
-const Map = () => {
+
+
+const LeafletMap: React.FC<Props> = ({setMap}) => {
+
+  
   return (
     <MapContainer
       center={[40.8054, 69.0241]}
-      // center={[lat, leng]}
       zoom={7}
       scrollWheelZoom={false}
       style={{ height: "25vh", width: "500px" }}
+      ref={setMap}
     >
       <TileLayer
         attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
@@ -23,4 +28,4 @@ const Map = () => {
   );
 };
 
-export default Map;
+export default LeafletMap;
