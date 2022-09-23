@@ -2,7 +2,8 @@ import { useState, useEffect, MouseEvent, useRef } from "react";
 import { WeatherData } from "../types";
 import dynamic from "next/dynamic";
 import weatherApi from "../axios";
-import { latLng, Map } from "leaflet";
+import { Map } from "leaflet";
+import { timeStamp } from "console";
 
 const MapWithNoSSR = dynamic(() => import("./map"), {
   ssr: false
@@ -15,8 +16,6 @@ const Search = (initialState: any) => {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<WeatherData>(initialState);
   const [mapPosition, setMapPosition] = useState<number[]>([])
-  // const []
-  // const [map, setMap] = useState<Map | null>(null);
   const mapRef = useRef<Map | null>(null)
   const appid = '30de99d12bc5906411ce85c94ebcdae0'
 
@@ -32,25 +31,27 @@ const Search = (initialState: any) => {
           lon: lng,
           units: 'metric',
           appid: appid,
+        
+
         },
       }
       )
       zeroTimeZone = res.data.timezone;
       zeroVisibility = res.data.visibility;
-
       setData(res.data)
       setMapPosition([lat, lng])
-      {mapRef.current?.flyTo({
+      {
+        mapRef.current?.flyTo({
           lat: lat,
           lng: lng
-        })}
-        
-    
+        })
+      }
       setLoading(false)
     }, (err) => {
       console.log("err", err)
     });
   }, [])
+
 
   const addNames = async (e: MouseEvent) => {
     try {
@@ -63,13 +64,11 @@ const Search = (initialState: any) => {
       })
       zeroTimeZone = res.data.timezone;
       setData(res.data)
-      console.log(res.data)
-      setMapPosition([res.data.coord.lat, res.data.coord.lon ])
+      setMapPosition([res.data.coord.lat, res.data.coord.lon])
       mapRef.current?.flyTo({
         lat: res.data.coord.lat,
         lng: res.data.coord.lon
       })
-      console.log(res.data)
     } catch (error) {
       console.log(error)
     }
@@ -92,12 +91,11 @@ const Search = (initialState: any) => {
       )
       zeroTimeZone = res.data.timezone;
       setData(res.data)
-      setMapPosition([res.data.coord.lat, res.data.coord.lon ])
+      setMapPosition([res.data.coord.lat, res.data.coord.lon])
       mapRef.current?.flyTo({
         lat: res.data.coord.lat,
         lng: res.data.coord.lon
       })
-      console.log(res.data)
 
     }, (err) => {
       console.log("err", err)
@@ -112,6 +110,7 @@ const Search = (initialState: any) => {
   const day = time.getDate()
   const month = time.toLocaleString('en', { month: 'long' });
   const res = `${day} ${month} ${hour}:${min} ${timeZoneApi}UTC`;
+
   const weather = data?.weather?.length ? data.weather[0] : null;
 
 
@@ -185,8 +184,37 @@ const Search = (initialState: any) => {
               </div>
             </div>
           </div>
+          <div className="grid grid-cols-[minmax(0,5fr)_minmax(0,4fr)] gap-4 mt-4">
+            <div>
+              <div className='text-xl font-bold'>Hourly forecast</div>
+              <div></div>
+            </div>
+            <div>
+              <div className='text-xl font-bold'>8-day forecast</div>
+              <ul>
+                <li className="flex justify-between items-center">
+                  <div>{data?.dt}</div>
+                  <div className="flex justify-between items-center basis-3/5">
+                    <div className="flex justify-start items-center">
+                      <span>svg</span>
+                      <span>34 / 21°C</span>
+                    </div>
+                    <span>clear sky</span>
+                  </div>
+                </li>
+
+              </ul>
+            </div>
+
+
+          </div>
+
         </div>
       </div>
+
+
+
+
     </div>
   )
 }

@@ -14,10 +14,10 @@ const LeafletMap: React.FC<Props> = ({mapRef, position} ) => {
   
   return (
     <MapContainer
-      center={[40.8054, 69.0241]}
+      center={position} 
       zoom={7}
       scrollWheelZoom={false}
-      style={{ height: "25vh", width: "500px" }}
+      style={{ height: "25vh", width: "100%" }}
       ref={mapRef}
     >
       <TileLayer
