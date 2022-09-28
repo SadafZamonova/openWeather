@@ -1,5 +1,5 @@
 import { useState, useEffect, MouseEvent, useRef } from "react";
-import { WeatherData } from "../types";
+import { WeatherData, Forecast } from "../types";
 import dynamic from "next/dynamic";
 import weatherApi from "../axios";
 import { Map } from "leaflet";
@@ -8,14 +8,18 @@ import { Map } from "leaflet";
 const MapWithNoSSR = dynamic(() => import("./map"), {
   ssr: false
 });
-
+const WEEK_DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 let zeroTimeZone = 0;
 let zeroVisibility = 0;
 const Search = (initialState: any) => {
   const [names, setNames] = useState('');
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<WeatherData>(initialState);
-  const [mapPosition, setMapPosition] = useState<number[]>([])
+  const [forecast , setForecast] = useState<Forecast>(initialState)
+  const [mapPosition, setMapPosition] = useState<{ lat: number, lng: number }>({
+    lat: 0,
+    lng: 0
+  })
   const mapRef = useRef<Map | null>(null)
   const appid = '30de99d12bc5906411ce85c94ebcdae0'
 
@@ -34,28 +38,7 @@ const Search = (initialState: any) => {
         },
       }
       )
-      zeroTimeZone = res.data.timezone;
-      zeroVisibility = res.data.visibility;
-      setData(res.data)
-      setMapPosition([lat, lng])
-      {
-        mapRef.current?.flyTo({
-          lat: lat,
-          lng: lng
-        })
-      }
-      setLoading(false)
-    }, (err) => {
-      console.log("err", err)
-    });
-  }, [])
 
-
-  useEffect(() => {
-    navigator.geolocation?.getCurrentPosition(async (cds) => {
-      const lat = cds.coords.latitude;
-      const lng = cds.coords.longitude;
-      setLoading(true)
       const response = await weatherApi.get('/forecast?', {
         params: {
           q: names,
@@ -67,22 +50,26 @@ const Search = (initialState: any) => {
         },
       }
       )
-      zeroTimeZone = response.data.сity.timezone;
-      zeroVisibility = response.data.visibility;
-      setData(response.data)
-      console.log(response)
-      setMapPosition([lat, lng])
-      {
+      zeroTimeZone = res.data.timezone;
+      zeroVisibility = res.data.visibility;
+      setData(res.data)
+      setForecast(response.data)
+      console.log(response.data)
+      setMapPosition({lat, lng})
         mapRef.current?.flyTo({
           lat: lat,
           lng: lng
         })
-      }
+
+        
       setLoading(false)
     }, (err) => {
       console.log("err", err)
     });
   }, [])
+
+
+
 
   const addNames = async (e: MouseEvent) => {
     try {
@@ -93,9 +80,20 @@ const Search = (initialState: any) => {
           appid: appid,
         },
       })
+
+      const response = await weatherApi.get('/forecast?', {
+        params: {
+          q: names,
+          units: 'metric',
+          appid: appid,
+
+        },
+      }
+      )
       zeroTimeZone = res.data.timezone;
       setData(res.data)
-      setMapPosition([res.data.coord.lat, res.data.coord.lon])
+      setForecast(response.data)
+      setMapPosition({lat:res.data.coord.lat, lng:res.data.coord.lon})
       mapRef.current?.flyTo({
         lat: res.data.coord.lat,
         lng: res.data.coord.lon
@@ -120,9 +118,22 @@ const Search = (initialState: any) => {
         },
       }
       )
+
+      const response = await weatherApi.get('/forecast?', {
+        params: {
+          q: names,
+          lat: cds.coords.latitude,
+          lon: cds.coords.longitude,
+          units: 'metric',
+          appid: appid,
+
+        },
+      }
+      )
       zeroTimeZone = res.data.timezone;
       setData(res.data)
-      setMapPosition([res.data.coord.lat, res.data.coord.lon])
+      setForecast(response.data)
+      setMapPosition({lat:res.data.coord.lat, lng:res.data.coord.lon})
       mapRef.current?.flyTo({
         lat: res.data.coord.lat,
         lng: res.data.coord.lon
@@ -143,7 +154,8 @@ const Search = (initialState: any) => {
   const res = `${day} ${month} ${hour}:${min} ${timeZoneApi}UTC`;
 
   const weather = data?.weather?.length ? data.weather[0] : null;
-
+  const dayInAWeek = new Date().getDay();
+  const forecastDays = WEEK_DAYS.slice(dayInAWeek, WEEK_DAYS.length).concat(WEEK_DAYS.slice(0, dayInAWeek));
 
   if (loading) {
     return <div className="flex justify-center mt-10"><h1 className="text-white">Loading...</h1></div>
@@ -226,16 +238,25 @@ const Search = (initialState: any) => {
             <div>
               <div className='text-xl font-bold'>8-day forecast</div>
               <ul>
-                <li className="flex justify-between items-center">
-                  <div>{data?.dt}</div>
-                  <div className="flex justify-between items-center basis-3/5">
-                    <div className="flex justify-start items-center">
-                      <span>svg</span>
-                      <span>34 / 21°C</span>
-                    </div>
-                    <span>clear sky</span>
-                  </div>
-                </li>
+                
+                   {forecast?.list?.splice(0, 7).map((item, idx) => (
+                   <>
+                   <li className="flex justify-between items-center">
+                  <div key={idx}>{forecastDays[idx]}</div>
+                  <div className="flex justify-between items-center basis-4/6">
+                   
+                    <div className="flex justify-start items-center" >
+                    <img src={`icons/${item.weather[0].icon}.png`}alt="weather"  className="w-12"/>
+                        <span>{Math.round(item.main.temp_max)}°C /{Math.round(item.main.temp_min)}°C</span>
+                      </div>
+                      <div>{item.weather[0].description}</div>
+                     </div> 
+                      </li>
+                      </>
+                    ))}
+                      
+                   
+               
 
               </ul>
             </div>
@@ -254,4 +275,6 @@ const Search = (initialState: any) => {
 }
 
 export default Search;
+
+
 

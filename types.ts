@@ -2,17 +2,18 @@ import { Map } from "leaflet";
 import { MutableRefObject } from "react";
 
 export interface WeatherData {
-    base: string
+    base?: string
     clouds: {all: number}
-    cod:number
-    coord: {lon: number,
+    cod?:number
+    coord?: {lon: number,
              lat: number}
     dt: number
-    id: number
-    main:{temp: number, feels_like: number, humidity:number, temp_min: number, temp_max: number, pressure: number}
-    name: string
-    sys:{type: number, id: number, country: string, sunrise: number, sunset: number}
-    timezone: number
+    dt_txt?: string,
+    id?: number
+    main:{temp: number, feels_like: number, humidity:number, temp_min: number, temp_max: number, pressure: number, grnd_level?:number, sea_level?: number, temp_kf?: number  }
+    name?: string
+    sys:{type?: number, id?: number, country?: string, sunrise?: number, sunset?: number}
+    timezone?: number
     visibility: number
     weather:{
         description: string, 
@@ -20,8 +21,28 @@ export interface WeatherData {
         id: number,
         main: string,
     }[]
-    wind:{speed: number, deg: number}
+    wind:{speed: number, deg: number, gust: number}
 }
+
+export interface Forecast {
+    city: {
+        coord: {
+        lat: number,
+        lon:number   
+        } 
+        country: string,
+        id: number,
+        name: string,
+        population: number,
+        sunrise: number, 
+        sunset: number,
+        timezone: number, }
+    cnt:number,
+    cod: string,
+    list: WeatherData[]
+    } 
+
+
 
 
 export interface Props {
