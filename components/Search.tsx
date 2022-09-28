@@ -3,7 +3,7 @@ import { WeatherData } from "../types";
 import dynamic from "next/dynamic";
 import weatherApi from "../axios";
 import { Map } from "leaflet";
-import { timeStamp } from "console";
+
 
 const MapWithNoSSR = dynamic(() => import("./map"), {
   ssr: false
@@ -31,8 +31,6 @@ const Search = (initialState: any) => {
           lon: lng,
           units: 'metric',
           appid: appid,
-        
-
         },
       }
       )
@@ -52,6 +50,39 @@ const Search = (initialState: any) => {
     });
   }, [])
 
+
+  useEffect(() => {
+    navigator.geolocation?.getCurrentPosition(async (cds) => {
+      const lat = cds.coords.latitude;
+      const lng = cds.coords.longitude;
+      setLoading(true)
+      const response = await weatherApi.get('/forecast?', {
+        params: {
+          q: names,
+          lat: lat,
+          lon: lng,
+          units: 'metric',
+          appid: appid,
+
+        },
+      }
+      )
+      zeroTimeZone = response.data.сity.timezone;
+      zeroVisibility = response.data.visibility;
+      setData(response.data)
+      console.log(response)
+      setMapPosition([lat, lng])
+      {
+        mapRef.current?.flyTo({
+          lat: lat,
+          lng: lng
+        })
+      }
+      setLoading(false)
+    }, (err) => {
+      console.log("err", err)
+    });
+  }, [])
 
   const addNames = async (e: MouseEvent) => {
     try {
@@ -118,6 +149,9 @@ const Search = (initialState: any) => {
     return <div className="flex justify-center mt-10"><h1 className="text-white">Loading...</h1></div>
   }
 
+
+
+
   return (
     <div>
       <div className="  h-full px-4 pt-5  w-full pb-5 bg-searchbg flex justify-center" >
@@ -164,7 +198,7 @@ const Search = (initialState: any) => {
               <div className="text-2xl font-bold pb-8">{data?.name}</div>
 
               <div className="flex flex-row whitespace-nowrap">
-                <img></img>
+                {weather ? <img className="w-12" src={`icons/${data.weather[0].icon}.png`}></img> : null}
                 <span className="text-4xl pb-3">{Math.round(data?.main?.temp)}°C </span>
               </div>
               <div className="font-bold flex ">Feels like {Math.round(data?.main?.feels_like)} °C. {weather ? <div className="font-normal"> {weather.description}  </div> : null} </div>
