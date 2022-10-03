@@ -1,3 +1,4 @@
+import { ScatterDataPoint } from "chart.js";
 import { Map } from "leaflet";
 import { MutableRefObject } from "react";
 
@@ -48,4 +49,9 @@ export interface Forecast {
 export interface Props {
     mapRef: MutableRefObject<Map | null>,
     position: any,
+  }
+
+  export interface Data {
+    data: (number | ScatterDataPoint | null | string[]) 
+
   }
