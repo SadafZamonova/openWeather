@@ -11,6 +11,9 @@ const MapWithNoSSR = dynamic(() => import("./map"), {
 const WEEK_DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 let zeroTimeZone = 0;
 let zeroVisibility = 0;
+
+
+
 const Search = (initialState: any) => {
   const [names, setNames] = useState('');
   const [loading, setLoading] = useState(false);
