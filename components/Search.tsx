@@ -3,6 +3,19 @@ import { WeatherData, Forecast } from "../types";
 import dynamic from "next/dynamic";
 import weatherApi from "../axios";
 import { Map } from "leaflet";
+import React from 'react';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+} from 'chart.js';
+import { Line } from 'react-chartjs-2';
+import {faker} from '@faker-js/faker';
 
 
 const MapWithNoSSR = dynamic(() => import("./map"), {
@@ -12,6 +25,42 @@ const WEEK_DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Satu
 let zeroTimeZone = 0;
 let zeroVisibility = 0;
 
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
+
+export const options = {
+  responsive: true,
+  plugins: {
+    legend: {
+      position: 'top' as const,
+    },
+    title: {
+      display: true,
+      text: 'Chart.js Line Chart',
+    },
+  },
+};
+
+// const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
+export const dataes = {
+  description,
+  datasets: [
+    {
+      label: 'Dataset 1',
+      data: labels.map(() => faker.datatype.number({ min: -10, max: 40 })),
+      borderColor: 'rgb(255, 99, 132)',
+      backgroundColor: 'rgba(255, 99, 132, 0.5)',
+    },
+   
+  ],
+};
 
 
 const Search = (initialState: any) => {
@@ -192,7 +241,7 @@ const Search = (initialState: any) => {
               {/* <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m3 11l19-9l-9 19l-2-8l-8-2z" onClick={() => myLocation()}
               /></svg> */}
             </div>
-            <span className="text-xs bg-#ececed w-40 pt-2 mr-4 ml-4">Different Weather?</span>
+            <span className="text-xs bg-#ececed w-40 pt-2 mr-4 pl-6 ml-4">Different Weather?</span>
             <div className="flex flex-row bg-#ececed relative">
               <div id="selected" className="absolute bg-white "></div>
               <div className="text-xs flex-1 items-center justify-center  z-10 cursor-pointer pt-2">
@@ -236,7 +285,7 @@ const Search = (initialState: any) => {
           <div className="grid grid-cols-[minmax(0,5fr)_minmax(0,4fr)] gap-4 mt-4">
             <div>
               <div className='text-xl font-bold'>Hourly forecast</div>
-              <div></div>
+              <Line options={options} data={dataes} />
             </div>
             <div>
               <div className='text-xl font-bold'>8-day forecast</div>
