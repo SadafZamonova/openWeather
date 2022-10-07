@@ -48,9 +48,9 @@ export const options = {
   },
 };
 
-// const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
+const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
 export const dataes = {
-  description,
+  labels,
   datasets: [
     {
       label: 'Dataset 1',
@@ -157,6 +157,38 @@ const Search = (initialState: any) => {
     setNames((e.target as HTMLInputElement).value)
   }
 
+  const  changeDegrees = async (e: MouseEvent) => {
+    console.log('dkjfskjd skdjfksf')
+    try {
+      const res = await weatherApi.get('/weather', {
+        params: {
+          q: names,
+          units: 'imperial',
+          appid: appid,
+        },
+      })
+
+      const response = await weatherApi.get('/forecast?', {
+        params: {
+          q: names,
+          units: 'imperial',
+          appid: appid,
+
+        },
+      }
+      )
+
+      setData(res.data)
+      setForecast(response.data)
+      setMapPosition({lat:res.data.coord.lat, lng:res.data.coord.lon})
+      mapRef.current?.flyTo({
+        lat: res.data.coord.lat,
+        lng: res.data.coord.lon
+      })
+  } catch (error) {
+    console.log(error)
+  }
+}
 
   const myLocation = async () => {
     navigator.geolocation?.getCurrentPosition(async (cds) => {
@@ -244,7 +276,7 @@ const Search = (initialState: any) => {
             <span className="text-xs bg-#ececed w-40 pt-2 mr-4 pl-6 ml-4">Different Weather?</span>
             <div className="flex flex-row bg-#ececed relative">
               <div id="selected" className="absolute bg-white "></div>
-              <div className="text-xs flex-1 items-center justify-center  z-10 cursor-pointer pt-2">
+              <div className="text-xs flex-1 items-center justify-center  z-10 cursor-pointer pt-2" onClick={(e) => changeDegrees(e)}>
                 Metric: °C, m/s
               </div>
               <div className="text-xs flex-1 items-center justify-center w-36 pt-2 z-10 cursor-pointer">
