@@ -2,7 +2,8 @@ import { useState, useEffect, MouseEvent, useRef } from "react";
 import { WeatherData, Forecast } from "../types";
 import dynamic from "next/dynamic";
 import weatherApi from "../axios";
-import { Map } from "leaflet";
+import { latLng, Map } from "leaflet";
+
 import React from 'react';
 import {
   Chart as ChartJS,
@@ -15,7 +16,9 @@ import {
   Legend,
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
-import {faker} from '@faker-js/faker';
+import { faker } from '@faker-js/faker';
+
+
 
 
 const MapWithNoSSR = dynamic(() => import("./map"), {
@@ -58,22 +61,24 @@ export const dataes = {
       borderColor: 'rgb(255, 99, 132)',
       backgroundColor: 'rgba(255, 99, 132, 0.5)',
     },
-   
+
   ],
 };
 
 
-const Search = (initialState: any) => {
+const Search = (initialState: any, ) => {
   const [names, setNames] = useState('');
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<WeatherData>(initialState);
-  const [forecast , setForecast] = useState<Forecast>(initialState)
+  const [forecast, setForecast] = useState<Forecast>(initialState)
   const [mapPosition, setMapPosition] = useState<{ lat: number, lng: number }>({
     lat: 0,
     lng: 0
   })
   const mapRef = useRef<Map | null>(null)
   const appid = '30de99d12bc5906411ce85c94ebcdae0'
+
+
 
   useEffect(() => {
     navigator.geolocation?.getCurrentPosition(async (cds) => {
@@ -102,18 +107,20 @@ const Search = (initialState: any) => {
         },
       }
       )
+      const id = res.data.id
+      console.log(id)
       zeroTimeZone = res.data.timezone;
       zeroVisibility = res.data.visibility;
       setData(res.data)
       setForecast(response.data)
       console.log(response.data)
-      setMapPosition({lat, lng})
-        mapRef.current?.flyTo({
-          lat: lat,
-          lng: lng
-        })
+      setMapPosition({ lat, lng })
+      mapRef.current?.flyTo({
+        lat: lat,
+        lng: lng
+      })
 
-        
+
       setLoading(false)
     }, (err) => {
       console.log("err", err)
@@ -145,7 +152,7 @@ const Search = (initialState: any) => {
       zeroTimeZone = res.data.timezone;
       setData(res.data)
       setForecast(response.data)
-      setMapPosition({lat:res.data.coord.lat, lng:res.data.coord.lon})
+      setMapPosition({ lat: res.data.coord.lat, lng: res.data.coord.lon })
       mapRef.current?.flyTo({
         lat: res.data.coord.lat,
         lng: res.data.coord.lon
@@ -157,38 +164,67 @@ const Search = (initialState: any) => {
     setNames((e.target as HTMLInputElement).value)
   }
 
-  const  changeDegrees = async (e: MouseEvent) => {
-    console.log('dkjfskjd skdjfksf')
+  const changeDegreesF = async (e: MouseEvent) => {
+
     try {
       const res = await weatherApi.get('/weather', {
         params: {
           q: names,
+          lat: `${mapPosition.lat}`,
+          lon: `${mapPosition.lng}`,
           units: 'imperial',
           appid: appid,
         },
-      })
 
+      })
       const response = await weatherApi.get('/forecast?', {
         params: {
           q: names,
+          lat: `${mapPosition.lat}`,
+          lon: `${mapPosition.lng}`,
           units: 'imperial',
           appid: appid,
 
         },
       }
       )
-
       setData(res.data)
       setForecast(response.data)
-      setMapPosition({lat:res.data.coord.lat, lng:res.data.coord.lon})
-      mapRef.current?.flyTo({
-        lat: res.data.coord.lat,
-        lng: res.data.coord.lon
-      })
-  } catch (error) {
-    console.log(error)
+    } catch (error) {
+      console.log(error)
+    }
   }
-}
+
+  const changeDegreesC = async (e: MouseEvent) => {
+
+    try {
+      const res = await weatherApi.get('/weather', {
+        params: {
+          q: names,
+          lat: `${mapPosition.lat}`,
+          lon: `${mapPosition.lng}`,
+          units: 'metric',
+          appid: appid,
+        },
+
+      })
+      const response = await weatherApi.get('/forecast?', {
+        params: {
+          q: names,
+          lat: `${mapPosition.lat}`,
+          lon: `${mapPosition.lng}`,
+          units: 'metric',
+          appid: appid,
+
+        },
+      }
+      )
+      setData(res.data)
+      setForecast(response.data)
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   const myLocation = async () => {
     navigator.geolocation?.getCurrentPosition(async (cds) => {
@@ -217,7 +253,7 @@ const Search = (initialState: any) => {
       zeroTimeZone = res.data.timezone;
       setData(res.data)
       setForecast(response.data)
-      setMapPosition({lat:res.data.coord.lat, lng:res.data.coord.lon})
+      setMapPosition({ lat: res.data.coord.lat, lng: res.data.coord.lon })
       mapRef.current?.flyTo({
         lat: res.data.coord.lat,
         lng: res.data.coord.lon
@@ -276,10 +312,10 @@ const Search = (initialState: any) => {
             <span className="text-xs bg-#ececed w-40 pt-2 mr-4 pl-6 ml-4">Different Weather?</span>
             <div className="flex flex-row bg-#ececed relative">
               <div id="selected" className="absolute bg-white "></div>
-              <div className="text-xs flex-1 items-center justify-center  z-10 cursor-pointer pt-2" onClick={(e) => changeDegrees(e)}>
+              <div className="text-xs flex-1 items-center justify-center  z-10 cursor-pointer pt-2  " onClick={(e) => changeDegreesC(e)}>
                 Metric: °C, m/s
               </div>
-              <div className="text-xs flex-1 items-center justify-center w-36 pt-2 z-10 cursor-pointer">
+              <div className="text-xs flex-1 items-center justify-center w-36 pt-2 z-10 cursor-pointer" onClick={(e) => changeDegreesF(e)}>
                 Imperial: °F, mph
               </div>
             </div>
@@ -292,7 +328,6 @@ const Search = (initialState: any) => {
             <div>
               <div className="text-red-600"> {res}</div>
               <div className="text-2xl font-bold pb-8">{data?.name}</div>
-
               <div className="flex flex-row whitespace-nowrap">
                 {weather ? <img className="w-12" src={`icons/${data.weather[0].icon}.png`}></img> : null}
                 <span className="text-4xl pb-3">{Math.round(data?.main?.temp)}°C </span>
@@ -322,38 +357,25 @@ const Search = (initialState: any) => {
             <div>
               <div className='text-xl font-bold'>8-day forecast</div>
               <ul>
-                
-                   {forecast?.list?.splice(0, 7).map((item, idx) => (
-                   <>
-                   <li className="flex justify-between items-center">
-                  <div key={idx}>{forecastDays[idx]}</div>
-                  <div className="flex justify-between items-center basis-4/6">
-                   
-                    <div className="flex justify-start items-center" >
-                    <img src={`icons/${item.weather[0].icon}.png`}alt="weather"  className="w-12"/>
-                        <span>{Math.round(item.main.temp_max)}°C /{Math.round(item.main.temp_min)}°C</span>
+                {forecast?.list?.splice(0, 7).map((item, idx) => (
+                  <>
+                    <li className="flex justify-between items-center">
+                      <div key={idx}>{forecastDays[idx]}</div>
+                      <div className="flex justify-between items-center basis-4/6">
+                        <div className="flex justify-start items-center" >
+                          <img src={`icons/${item.weather[0].icon}.png`} alt="weather" className="w-12" />
+                          <span>{Math.round(item.main.temp_max)}°C /{Math.round(item.main.temp_min)}°C</span>
+                        </div>
+                        <div>{item.weather[0].description}</div>
                       </div>
-                      <div>{item.weather[0].description}</div>
-                     </div> 
-                      </li>
-                      </>
-                    ))}
-                      
-                   
-               
-
+                    </li>
+                  </>
+                ))}
               </ul>
             </div>
-
-
           </div>
-
         </div>
       </div>
-
-
-
-
     </div>
   )
 }
