@@ -1,14 +1,173 @@
-import Link from 'next/link'
 import { useRouter } from 'next/router'
-import Search from '../components/search';
+import { useState, useEffect , useRef, MouseEvent, } from 'react';
+import weatherApi from '../axios';
+import { WeatherData,  Forecast } from '../types';
+import { appId } from '../appId/appId';
+import { Map } from "leaflet";
 
-export default function Page() {
+export default function Page(initialState: any) {
   const router = useRouter()
-  const id:string | string[] | undefined = router.query.id;
+  const id = router.query.id as string;
+  const [data, setData] = useState<WeatherData>(initialState);
+  const [names, setNames] = useState('');
+  const [forecast, setForecast] = useState<Forecast>(initialState)
+  const [mapPosition, setMapPosition] = useState<{ lat: number, lng: number }>({
+    lat: 0,
+    lng: 0
+  })
+  const mapRef = useRef<Map | null>(null)
+
+
+useEffect(() => {
+    const getData = async () => {
+      const res = await weatherApi.get('/weather', {
+        params: { id, appId, 
+          units: 'metric',
+    }
+      })
+
+      const resp = await weatherApi.get('/forecast?', {
+        params: { id, appId, 
+          units: 'metric',
+    }
+      })
+      console.log(res)
+      setData(res.data)
+      setForecast(resp.data)
+    }
+
+    if(id) {
+      getData()
+    }
+  }, [id])
+
+
+
+  const addNames = async (e: MouseEvent) => {
+    try {
+      const res = await weatherApi.get('/weather', {
+        params: {
+          q: names,
+          units: 'metric',
+          appid: appId,
+        },
+      })
+      const response = await weatherApi.get('/forecast?', {
+        params: {
+          q: names,
+          units: 'metric',
+          appid: appId,
+        },
+      }
+      )
+      // zeroTimeZone = res.data.timezone;
+      setData(res.data)
+      setForecast(response.data)
+      setMapPosition({ lat: res.data.coord.lat, lng: res.data.coord.lon })
+      mapRef.current?.flyTo({
+        lat: res.data.coord.lat,
+        lng: res.data.coord.lon
+      })
+    } catch (error) {
+      console.log(error)
+    }
+    setNames((e.target as HTMLInputElement).value)
+  }
+  const weather = data?.weather?.length ? data.weather[0] : null;
+
 
   return (
     <div>
-          <Search id={id}/>
+      <div className="  h-full px-4 pt-5  w-full pb-5 bg-searchbg flex justify-center" >
+        <div className="  h-full px-4 pt-5  pb-5  w-900 flex justify-center">
+          <div className=" h-full w-full ">
+            <div className="input-group relative flex items-stretch w-full ">
+              <input
+                type="search"
+                className="form-control relative flex-auto w-full min-w-0 block  px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
+                placeholder="Search city"
+                aria-label="Search"
+                aria-describedby="button-addon2"
+                onChange={(e) => setNames(e.target.value)}
+                value={names}
+              />
+              <button className="bg-black text-searchbg rounded-r-md w-20" onClick={(e) => addNames(e)} >Search</button>
+
+            </div>
+          </div>
+          <div className="flex flex-row justify-end">
+            <div className=" flex items-center justify-center cursor-pointer ml-24 p-2 bg-#ececed">
+              {/* <button onClick={() => myLocation()}>геолокация</button> */}
+              {/* <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m3 11l19-9l-9 19l-2-8l-8-2z" onClick={() => myLocation()}
+              /></svg> */}
+            </div>
+            <span className="text-xs bg-#ececed w-40 pt-2 mr-4 pl-6 ml-4">Different Weather?</span>
+            <div className="flex flex-row bg-#ececed relative">
+              <div id="selected" className="absolute bg-white "></div>
+              {/* <div className="text-xs flex-1 items-center justify-center  z-10 cursor-pointer pt-2" onClick={(e) => changeDegreesC(e)}>
+                Metric: °C, m/s
+              </div> */}
+              {/* <div className="text-xs flex-1 items-center justify-center w-36 pt-2 z-10 cursor-pointer" onClick={(e) => changeDegreesF(e)}>
+                Imperial: °F, mph
+              </div> */}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="w-full flex justify-center">
+        <div className=" w-900 pt-6 pb-6  px-4   ">
+          <div className="grid grid-cols-[minmax(0,3fr)_minmax(0,5fr)] gap-4">
+            <div>
+              {/* <div className="text-red-600"> {res}</div> */}
+              <div className="text-2xl font-bold pb-8">{data?.name}</div>
+              <div className="flex flex-row whitespace-nowrap">
+                {weather ? <img className="w-12" src={`icons/${data?.weather[0].icon}.png`}></img> : null}
+                <span className="text-4xl pb-3">{Math.round(data?.main?.temp)}°C </span>
+              </div>
+              <div className="font-bold flex ">Feels like {Math.round(data?.main?.feels_like)} °C. {weather ? <div className="font-normal"> {weather.description}  </div> : null} </div>
+
+              <ul className="flex flex-wrap  mt-1 mb-0 pl-4 pr-4 w-96 ">
+                <li className="flex items-center flex-nowrap mr-16">{data?.wind?.speed}m/s WNW</li>
+                <li className="flex items-center flex-nowrap  mr-16">{data?.main?.pressure}hPa</li>
+                <li className="flex items-center flex-nowrap  mr-16">Humidity: {data?.main?.humidity}%</li>
+                <li className="flex items-center flex-nowrap  mr-16">UV:4</li>
+                <li className="flex items-center flex-nowrap  mr-16">Dew point:-2°C</li>
+                {/* <li className="flex items-center flex-nowrap  mr-16">Visibility:{visibility}km</li> */}
+              </ul>
+            </div>
+            <div>
+              <div className="relative">
+                {/* <MapWithNoSSR mapRef={mapRef} position={mapPosition} /> */}
+              </div>
+            </div>
+          </div>
+          <div className="grid grid-cols-[minmax(0,5fr)_minmax(0,4fr)] gap-4 mt-4">
+            <div>
+              <div className='text-xl font-bold'>Hourly forecast</div>
+              {/* <Line options={options} data={dataes} /> */}
+            </div>
+            <div>
+              <div className='text-xl font-bold'>8-day forecast</div>
+              <ul>
+                {forecast?.list?.splice(0, 7).map((item, id) => (
+                  <>
+                    <li className="flex justify-between items-center">
+                      {/* <div key={id}>{forecastDays[id]}</div> */}
+                      <div className="flex justify-between items-center basis-4/6">
+                        <div className="flex justify-start items-center" >
+                          <img src={`icons/${item.weather[0].icon}.png`} alt="weather" className="w-12" />
+                          <span>{Math.round(item.main.temp_max)}°C /{Math.round(item.main.temp_min)}°C</span>
+                        </div>
+                        <div>{item.weather[0].description}</div>
+                      </div>
+                    </li>
+                  </>
+                 ))} 
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }

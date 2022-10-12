@@ -7,6 +7,7 @@ import React from 'react';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 import { faker } from '@faker-js/faker';
+import {appId} from '../appId/appId'
 
 const MapWithNoSSR = dynamic(() => import("./map"), {
   ssr: false
@@ -48,14 +49,14 @@ export const dataes = {
 const Search = (initialState: any,) => {
   const [names, setNames] = useState('');
   const [loading, setLoading] = useState(false);
-  const [data, setData] = useState<WeatherData>(initialState);
+  const [data, setData] = useState<WeatherData >(initialState);
   const [forecast, setForecast] = useState<Forecast>(initialState)
   const [mapPosition, setMapPosition] = useState<{ lat: number, lng: number }>({
     lat: 0,
     lng: 0
   })
   const mapRef = useRef<Map | null>(null)
-  const appid = '30de99d12bc5906411ce85c94ebcdae0'
+  // const appid = '30de99d12bc5906411ce85c94ebcdae0'
 
 
 
@@ -70,7 +71,7 @@ const Search = (initialState: any,) => {
           lat: lat,
           lon: lng,
           units: 'metric',
-          appid: appid,
+          appid: appId,
         },
       }
       )
@@ -80,12 +81,12 @@ const Search = (initialState: any,) => {
           lat: lat,
           lon: lng,
           units: 'metric',
-          appid: appid,
+          appid: appId,
         },
       }
       )
-      const id = res.data.id
-      console.log(id)
+      // const id = res.data.id
+      // console.log(id)
       zeroTimeZone = res.data.timezone;
       zeroVisibility = res.data.visibility;
       setData(res.data)
@@ -111,14 +112,14 @@ const Search = (initialState: any,) => {
         params: {
           q: names,
           units: 'metric',
-          appid: appid,
+          appid: appId,
         },
       })
       const response = await weatherApi.get('/forecast?', {
         params: {
           q: names,
           units: 'metric',
-          appid: appid,
+          appid: appId,
         },
       }
       )
@@ -145,7 +146,7 @@ const Search = (initialState: any,) => {
           lat: `${mapPosition.lat}`,
           lon: `${mapPosition.lng}`,
           units: 'imperial',
-          appid: appid,
+          appid: appId,
         },
       })
       const response = await weatherApi.get('/forecast?', {
@@ -154,7 +155,7 @@ const Search = (initialState: any,) => {
           lat: `${mapPosition.lat}`,
           lon: `${mapPosition.lng}`,
           units: 'imperial',
-          appid: appid,
+          appid: appId,
         },
       }
       )
@@ -175,7 +176,7 @@ const Search = (initialState: any,) => {
           lat: `${mapPosition.lat}`,
           lon: `${mapPosition.lng}`,
           units: 'metric',
-          appid: appid,
+          appid: appId,
         },
       })
       const response = await weatherApi.get('/forecast?', {
@@ -184,7 +185,7 @@ const Search = (initialState: any,) => {
           lat: `${mapPosition.lat}`,
           lon: `${mapPosition.lng}`,
           units: 'metric',
-          appid: appid,
+          appid: appId,
         },
       }
       )
@@ -204,7 +205,7 @@ const Search = (initialState: any,) => {
           lat: cds.coords.latitude,
           lon: cds.coords.longitude,
           units: 'metric',
-          appid: appid,
+          appid: appId,
         },
       }
       )
@@ -214,7 +215,7 @@ const Search = (initialState: any,) => {
           lat: cds.coords.latitude,
           lon: cds.coords.longitude,
           units: 'metric',
-          appid: appid,
+          appid: appId,
 
         },
       }
@@ -248,9 +249,6 @@ const Search = (initialState: any,) => {
   if (loading) {
     return <div className="flex justify-center mt-10"><h1 className="text-white">Loading...</h1></div>
   }
-
-
-
 
   return (
     <div>
