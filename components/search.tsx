@@ -2,41 +2,21 @@ import { useState, useEffect, MouseEvent, useRef } from "react";
 import { WeatherData, Forecast } from "../types";
 import dynamic from "next/dynamic";
 import weatherApi from "../axios";
-import { latLng, Map } from "leaflet";
-
+import { Map } from "leaflet";
 import React from 'react';
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-} from 'chart.js';
+import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 import { faker } from '@faker-js/faker';
-
-
-
 
 const MapWithNoSSR = dynamic(() => import("./map"), {
   ssr: false
 });
+
 const WEEK_DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 let zeroTimeZone = 0;
 let zeroVisibility = 0;
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
-);
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 export const options = {
   responsive: true,
@@ -61,12 +41,11 @@ export const dataes = {
       borderColor: 'rgb(255, 99, 132)',
       backgroundColor: 'rgba(255, 99, 132, 0.5)',
     },
-
   ],
 };
 
 
-const Search = (initialState: any, ) => {
+const Search = (initialState: any,) => {
   const [names, setNames] = useState('');
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<WeatherData>(initialState);
@@ -95,7 +74,6 @@ const Search = (initialState: any, ) => {
         },
       }
       )
-
       const response = await weatherApi.get('/forecast?', {
         params: {
           q: names,
@@ -103,7 +81,6 @@ const Search = (initialState: any, ) => {
           lon: lng,
           units: 'metric',
           appid: appid,
-
         },
       }
       )
@@ -119,8 +96,6 @@ const Search = (initialState: any, ) => {
         lat: lat,
         lng: lng
       })
-
-
       setLoading(false)
     }, (err) => {
       console.log("err", err)
@@ -139,13 +114,11 @@ const Search = (initialState: any, ) => {
           appid: appid,
         },
       })
-
       const response = await weatherApi.get('/forecast?', {
         params: {
           q: names,
           units: 'metric',
           appid: appid,
-
         },
       }
       )
@@ -160,12 +133,11 @@ const Search = (initialState: any, ) => {
     } catch (error) {
       console.log(error)
     }
-
     setNames((e.target as HTMLInputElement).value)
   }
 
-  const changeDegreesF = async (e: MouseEvent) => {
 
+  const changeDegreesF = async (e: MouseEvent) => {
     try {
       const res = await weatherApi.get('/weather', {
         params: {
@@ -175,7 +147,6 @@ const Search = (initialState: any, ) => {
           units: 'imperial',
           appid: appid,
         },
-
       })
       const response = await weatherApi.get('/forecast?', {
         params: {
@@ -184,7 +155,6 @@ const Search = (initialState: any, ) => {
           lon: `${mapPosition.lng}`,
           units: 'imperial',
           appid: appid,
-
         },
       }
       )
@@ -194,9 +164,10 @@ const Search = (initialState: any, ) => {
       console.log(error)
     }
   }
+
+
 
   const changeDegreesC = async (e: MouseEvent) => {
-
     try {
       const res = await weatherApi.get('/weather', {
         params: {
@@ -206,7 +177,6 @@ const Search = (initialState: any, ) => {
           units: 'metric',
           appid: appid,
         },
-
       })
       const response = await weatherApi.get('/forecast?', {
         params: {
@@ -215,7 +185,6 @@ const Search = (initialState: any, ) => {
           lon: `${mapPosition.lng}`,
           units: 'metric',
           appid: appid,
-
         },
       }
       )
@@ -225,6 +194,7 @@ const Search = (initialState: any, ) => {
       console.log(error)
     }
   }
+
 
   const myLocation = async () => {
     navigator.geolocation?.getCurrentPosition(async (cds) => {
@@ -238,7 +208,6 @@ const Search = (initialState: any, ) => {
         },
       }
       )
-
       const response = await weatherApi.get('/forecast?', {
         params: {
           q: names,
@@ -258,11 +227,11 @@ const Search = (initialState: any, ) => {
         lat: res.data.coord.lat,
         lng: res.data.coord.lon
       })
-
     }, (err) => {
       console.log("err", err)
     });
   }
+
 
   const visibility = zeroVisibility / 1000;
   const time = new Date();
@@ -272,7 +241,6 @@ const Search = (initialState: any, ) => {
   const day = time.getDate()
   const month = time.toLocaleString('en', { month: 'long' });
   const res = `${day} ${month} ${hour}:${min} ${timeZoneApi}UTC`;
-
   const weather = data?.weather?.length ? data.weather[0] : null;
   const dayInAWeek = new Date().getDay();
   const forecastDays = WEEK_DAYS.slice(dayInAWeek, WEEK_DAYS.length).concat(WEEK_DAYS.slice(0, dayInAWeek));
@@ -312,7 +280,7 @@ const Search = (initialState: any, ) => {
             <span className="text-xs bg-#ececed w-40 pt-2 mr-4 pl-6 ml-4">Different Weather?</span>
             <div className="flex flex-row bg-#ececed relative">
               <div id="selected" className="absolute bg-white "></div>
-              <div className="text-xs flex-1 items-center justify-center  z-10 cursor-pointer pt-2  " onClick={(e) => changeDegreesC(e)}>
+              <div className="text-xs flex-1 items-center justify-center  z-10 cursor-pointer pt-2" onClick={(e) => changeDegreesC(e)}>
                 Metric: °C, m/s
               </div>
               <div className="text-xs flex-1 items-center justify-center w-36 pt-2 z-10 cursor-pointer" onClick={(e) => changeDegreesF(e)}>
@@ -357,10 +325,10 @@ const Search = (initialState: any, ) => {
             <div>
               <div className='text-xl font-bold'>8-day forecast</div>
               <ul>
-                {forecast?.list?.splice(0, 7).map((item, idx) => (
+                {forecast?.list?.splice(0, 7).map((item, id) => (
                   <>
                     <li className="flex justify-between items-center">
-                      <div key={idx}>{forecastDays[idx]}</div>
+                      <div key={id}>{forecastDays[id]}</div>
                       <div className="flex justify-between items-center basis-4/6">
                         <div className="flex justify-start items-center" >
                           <img src={`icons/${item.weather[0].icon}.png`} alt="weather" className="w-12" />
