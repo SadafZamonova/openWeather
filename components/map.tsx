@@ -6,12 +6,12 @@ import { Props } from "../types";
 
 
 
-const LeafletMap: React.FC<Props> = ({mapRef, position} ) => {
+const LeafletMap: React.FC<Props> = ({ mapRef, position }) => {
 
-  
+
   return (
     <MapContainer
-      center={position} 
+      center={position}
       zoom={7}
       scrollWheelZoom={false}
       style={{ height: "25vh", width: "100%" }}

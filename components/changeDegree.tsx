@@ -1,12 +1,12 @@
 import weatherApi from "../axios";
 import { appId } from '../appId/appId'
-import {  MouseEvent } from "react";
+import { MouseEvent } from "react";
 import { DegreeProps } from "../types";
 
 
-const Degree = ( {names, mapPosition, setData, setForecast}:DegreeProps) => {
-   
-    const changeDegreesF = async (e: MouseEvent) => {
+const Degree = ({ names, mapPosition, setData, setForecast }: DegreeProps) => {
+
+  const changeDegreesF = async (e: MouseEvent) => {
     try {
       const res = await weatherApi.get('/weather', {
         params: {
@@ -62,15 +62,15 @@ const Degree = ( {names, mapPosition, setData, setForecast}:DegreeProps) => {
     }
   }
 
-return (
-<> 
-<div className="text-xs flex-1 items-center justify-center  z-10 cursor-pointer pt-2" onClick={(e) => changeDegreesC(e)}>
-    Metric: °C, m/s
-  </div>
-  <div className="text-xs flex-1 items-center justify-center w-36 pt-2 z-10 cursor-pointer" onClick={(e) => changeDegreesF(e)}>
-    Imperial: °F, mph
-  </div></>   
-)
+  return (
+    <>
+      <div className="text-xs flex-1 items-center justify-center  z-10 cursor-pointer pt-2" onClick={(e) => changeDegreesC(e)}>
+        Metric: °C, m/s
+      </div>
+      <div className="text-xs flex-1 items-center justify-center w-36 pt-2 z-10 cursor-pointer" onClick={(e) => changeDegreesF(e)}>
+        Imperial: °F, mph
+      </div></>
+  )
 }
 
 export default Degree;
