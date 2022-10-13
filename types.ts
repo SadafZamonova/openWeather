@@ -55,3 +55,18 @@ export interface Props {
     data: (number | ScatterDataPoint | null | string[]) 
 
   }
+
+  export interface DegreeProps {
+    names: string,
+    mapPosition:{ lat: number, lng: number },
+    setData:  any,
+    setForecast: any,
+  }
+
+  export interface LocationProps {
+    names: string,
+    setData:  any,
+    setForecast: any,
+    setMapPosition: any,
+    mapRef: any
+  }

@@ -6,9 +6,6 @@ import { Props } from "../types";
 
 
 
-
-
-
 const LeafletMap: React.FC<Props> = ({mapRef, position} ) => {
 
   

@@ -4,10 +4,10 @@ import dynamic from "next/dynamic";
 import weatherApi from "../axios";
 import { Map } from "leaflet";
 import React from 'react';
-import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, } from 'chart.js';
-import { Line } from 'react-chartjs-2';
-import { faker } from '@faker-js/faker';
-import {appId} from '../appId/appId'
+import { appId } from '../appId/appId'
+import Charts from "./chart";
+import Degree from "./changeDegree";
+import MyLocation from "./myLocation";
 
 const MapWithNoSSR = dynamic(() => import("./map"), {
   ssr: false
@@ -17,47 +17,18 @@ const WEEK_DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Satu
 let zeroTimeZone = 0;
 let zeroVisibility = 0;
 
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
-
-export const options = {
-  responsive: true,
-  plugins: {
-    legend: {
-      position: 'top' as const,
-    },
-    title: {
-      display: true,
-      text: 'Chart.js Line Chart',
-    },
-  },
-};
-
-const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
-export const dataes = {
-  labels,
-  datasets: [
-    {
-      label: 'Dataset 1',
-      data: labels.map(() => faker.datatype.number({ min: -10, max: 40 })),
-      borderColor: 'rgb(255, 99, 132)',
-      backgroundColor: 'rgba(255, 99, 132, 0.5)',
-    },
-  ],
-};
 
 
 const Search = (initialState: any,) => {
   const [names, setNames] = useState('');
   const [loading, setLoading] = useState(false);
-  const [data, setData] = useState<WeatherData >(initialState);
+  const [data, setData] = useState<WeatherData>(initialState);
   const [forecast, setForecast] = useState<Forecast>(initialState)
   const [mapPosition, setMapPosition] = useState<{ lat: number, lng: number }>({
     lat: 0,
     lng: 0
   })
   const mapRef = useRef<Map | null>(null)
-  // const appid = '30de99d12bc5906411ce85c94ebcdae0'
-
 
 
   useEffect(() => {
@@ -85,8 +56,6 @@ const Search = (initialState: any,) => {
         },
       }
       )
-      // const id = res.data.id
-      // console.log(id)
       zeroTimeZone = res.data.timezone;
       zeroVisibility = res.data.visibility;
       setData(res.data)
@@ -102,8 +71,6 @@ const Search = (initialState: any,) => {
       console.log("err", err)
     });
   }, [])
-
-
 
 
   const addNames = async (e: MouseEvent) => {
@@ -137,103 +104,6 @@ const Search = (initialState: any,) => {
     setNames((e.target as HTMLInputElement).value)
   }
 
-
-  const changeDegreesF = async (e: MouseEvent) => {
-    try {
-      const res = await weatherApi.get('/weather', {
-        params: {
-          q: names,
-          lat: `${mapPosition.lat}`,
-          lon: `${mapPosition.lng}`,
-          units: 'imperial',
-          appid: appId,
-        },
-      })
-      const response = await weatherApi.get('/forecast?', {
-        params: {
-          q: names,
-          lat: `${mapPosition.lat}`,
-          lon: `${mapPosition.lng}`,
-          units: 'imperial',
-          appid: appId,
-        },
-      }
-      )
-      setData(res.data)
-      setForecast(response.data)
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
-
-
-  const changeDegreesC = async (e: MouseEvent) => {
-    try {
-      const res = await weatherApi.get('/weather', {
-        params: {
-          q: names,
-          lat: `${mapPosition.lat}`,
-          lon: `${mapPosition.lng}`,
-          units: 'metric',
-          appid: appId,
-        },
-      })
-      const response = await weatherApi.get('/forecast?', {
-        params: {
-          q: names,
-          lat: `${mapPosition.lat}`,
-          lon: `${mapPosition.lng}`,
-          units: 'metric',
-          appid: appId,
-        },
-      }
-      )
-      setData(res.data)
-      setForecast(response.data)
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
-
-  const myLocation = async () => {
-    navigator.geolocation?.getCurrentPosition(async (cds) => {
-      const res = await weatherApi.get('/weather', {
-        params: {
-          q: names,
-          lat: cds.coords.latitude,
-          lon: cds.coords.longitude,
-          units: 'metric',
-          appid: appId,
-        },
-      }
-      )
-      const response = await weatherApi.get('/forecast?', {
-        params: {
-          q: names,
-          lat: cds.coords.latitude,
-          lon: cds.coords.longitude,
-          units: 'metric',
-          appid: appId,
-
-        },
-      }
-      )
-      zeroTimeZone = res.data.timezone;
-      setData(res.data)
-      setForecast(response.data)
-      setMapPosition({ lat: res.data.coord.lat, lng: res.data.coord.lon })
-      mapRef.current?.flyTo({
-        lat: res.data.coord.lat,
-        lng: res.data.coord.lon
-      })
-    }, (err) => {
-      console.log("err", err)
-    });
-  }
-
-
   const visibility = zeroVisibility / 1000;
   const time = new Date();
   const timeZoneApi = zeroTimeZone / 3600;
@@ -266,24 +136,16 @@ const Search = (initialState: any,) => {
                 value={names}
               />
               <button className="bg-black text-searchbg rounded-r-md w-20" onClick={(e) => addNames(e)} >Search</button>
-
             </div>
           </div>
           <div className="flex flex-row justify-end">
             <div className=" flex items-center justify-center cursor-pointer ml-24 p-2 bg-#ececed">
-              <button onClick={() => myLocation()}>геолокация</button>
-              {/* <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m3 11l19-9l-9 19l-2-8l-8-2z" onClick={() => myLocation()}
-              /></svg> */}
+             <MyLocation  names={names} setMapPosition={setMapPosition} setData={setData} setForecast={setForecast} mapRef={mapRef} />             
             </div>
             <span className="text-xs bg-#ececed w-40 pt-2 mr-4 pl-6 ml-4">Different Weather?</span>
             <div className="flex flex-row bg-#ececed relative">
-              <div id="selected" className="absolute bg-white "></div>
-              <div className="text-xs flex-1 items-center justify-center  z-10 cursor-pointer pt-2" onClick={(e) => changeDegreesC(e)}>
-                Metric: °C, m/s
-              </div>
-              <div className="text-xs flex-1 items-center justify-center w-36 pt-2 z-10 cursor-pointer" onClick={(e) => changeDegreesF(e)}>
-                Imperial: °F, mph
-              </div>
+              <div id="selected" className="absolute bg-white "></div> 
+              <Degree names={names} mapPosition={mapPosition} setData={setData} setForecast={setForecast}/>
             </div>
           </div>
         </div>
@@ -299,7 +161,6 @@ const Search = (initialState: any,) => {
                 <span className="text-4xl pb-3">{Math.round(data?.main?.temp)}°C </span>
               </div>
               <div className="font-bold flex ">Feels like {Math.round(data?.main?.feels_like)} °C. {weather ? <div className="font-normal"> {weather.description}  </div> : null} </div>
-
               <ul className="flex flex-wrap  mt-1 mb-0 pl-4 pr-4 w-96 ">
                 <li className="flex items-center flex-nowrap mr-16">{data?.wind?.speed}m/s WNW</li>
                 <li className="flex items-center flex-nowrap  mr-16">{data?.main?.pressure}hPa</li>
@@ -318,7 +179,7 @@ const Search = (initialState: any,) => {
           <div className="grid grid-cols-[minmax(0,5fr)_minmax(0,4fr)] gap-4 mt-4">
             <div>
               <div className='text-xl font-bold'>Hourly forecast</div>
-              <Line options={options} data={dataes} />
+              <Charts />
             </div>
             <div>
               <div className='text-xl font-bold'>8-day forecast</div>
