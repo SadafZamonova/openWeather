@@ -8,6 +8,7 @@ import { appId } from '../appId/appId'
 import Charts from "./chart";
 import Degree from "./changeDegree";
 import MyLocation from "./myLocation";
+import Forecasts from "./forecast";
 
 const MapWithNoSSR = dynamic(() => import("./map"), {
   ssr: false
@@ -110,7 +111,7 @@ const Search = (initialState: any,) => {
   const min = time.getMinutes()
   const day = time.getDate()
   const month = time.toLocaleString('en', { month: 'long' });
-  const res = `${day} ${month} ${hour}:${min} ${timeZoneApi}UTC`;
+  const resData = `${day} ${month} ${hour}:${min} ${timeZoneApi}UTC`;
   const weather = data?.weather?.length ? data.weather[0] : null;
   const dayInAWeek = new Date().getDay();
   const forecastDays = WEEK_DAYS.slice(dayInAWeek, WEEK_DAYS.length).concat(WEEK_DAYS.slice(0, dayInAWeek));
@@ -153,7 +154,7 @@ const Search = (initialState: any,) => {
         <div className=" w-900 pt-6 pb-6  px-4   ">
           <div className="grid grid-cols-[minmax(0,3fr)_minmax(0,5fr)] gap-4">
             <div>
-              <div className="text-red-600"> {res}</div>
+              <div className="text-red-600"> {resData}</div>
               <div className="text-2xl font-bold pb-8">{data?.name}</div>
               <div className="flex flex-row whitespace-nowrap">
                 {weather ? <img className="w-12" src={`icons/${data.weather[0].icon}.png`}></img> : null}
@@ -183,20 +184,7 @@ const Search = (initialState: any,) => {
             <div>
               <div className='text-xl font-bold'>8-day forecast</div>
               <ul>
-                {forecast?.list?.splice(0, 7).map((item, id) => (
-                  <>
-                    <li className="flex justify-between items-center">
-                      <div key={id}>{forecastDays[id]}</div>
-                      <div className="flex justify-between items-center basis-4/6">
-                        <div className="flex justify-start items-center" >
-                          <img src={`icons/${item.weather[0].icon}.png`} alt="weather" className="w-12" />
-                          <span>{Math.round(item.main.temp_max)}°C /{Math.round(item.main.temp_min)}°C</span>
-                        </div>
-                        <div>{item.weather[0].description}</div>
-                      </div>
-                    </li>
-                  </>
-                ))}
+                <Forecasts forecast={forecast} forecastDays={forecastDays}/>
               </ul>
             </div>
           </div>

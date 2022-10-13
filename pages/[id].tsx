@@ -1,10 +1,19 @@
 import { useRouter } from 'next/router'
 import { useState, useEffect , useRef, MouseEvent, } from 'react';
+import dynamic from "next/dynamic";
 import weatherApi from '../axios';
 import { WeatherData,  Forecast } from '../types';
 import { appId } from '../appId/appId';
 import { Map } from "leaflet";
+import MyLocation from '../components/myLocation';
+import Degree from '../components/changeDegree';
+import Charts from '../components/chart';
+import Forecasts from '../components/forecast';
 
+const MapWithNoSSR = dynamic(() => import("../components/map"), {
+  ssr: false
+});
+const WEEK_DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 export default function Page(initialState: any) {
   const router = useRouter()
   const id = router.query.id as string;
@@ -14,8 +23,11 @@ export default function Page(initialState: any) {
   const [mapPosition, setMapPosition] = useState<{ lat: number, lng: number }>({
     lat: 0,
     lng: 0
-  })
-  const mapRef = useRef<Map | null>(null)
+  });
+  const mapRef = useRef<Map | null>(null);
+  const dayInAWeek = new Date().getDay();
+  const forecastDays = WEEK_DAYS.slice(dayInAWeek, WEEK_DAYS.length).concat(WEEK_DAYS.slice(0, dayInAWeek));
+  const weather = data?.weather?.length ? data.weather[0] : null;
 
 
 useEffect(() => {
@@ -25,7 +37,6 @@ useEffect(() => {
           units: 'metric',
     }
       })
-
       const resp = await weatherApi.get('/forecast?', {
         params: { id, appId, 
           units: 'metric',
@@ -35,13 +46,10 @@ useEffect(() => {
       setData(res.data)
       setForecast(resp.data)
     }
-
     if(id) {
       getData()
     }
   }, [id])
-
-
 
   const addNames = async (e: MouseEvent) => {
     try {
@@ -73,7 +81,7 @@ useEffect(() => {
     }
     setNames((e.target as HTMLInputElement).value)
   }
-  const weather = data?.weather?.length ? data.weather[0] : null;
+
 
 
   return (
@@ -97,19 +105,12 @@ useEffect(() => {
           </div>
           <div className="flex flex-row justify-end">
             <div className=" flex items-center justify-center cursor-pointer ml-24 p-2 bg-#ececed">
-              {/* <button onClick={() => myLocation()}>геолокация</button> */}
-              {/* <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m3 11l19-9l-9 19l-2-8l-8-2z" onClick={() => myLocation()}
-              /></svg> */}
+            <MyLocation names={names} setMapPosition={setMapPosition} setData={setData} setForecast={setForecast} mapRef={mapRef} />
             </div>
             <span className="text-xs bg-#ececed w-40 pt-2 mr-4 pl-6 ml-4">Different Weather?</span>
             <div className="flex flex-row bg-#ececed relative">
               <div id="selected" className="absolute bg-white "></div>
-              {/* <div className="text-xs flex-1 items-center justify-center  z-10 cursor-pointer pt-2" onClick={(e) => changeDegreesC(e)}>
-                Metric: °C, m/s
-              </div> */}
-              {/* <div className="text-xs flex-1 items-center justify-center w-36 pt-2 z-10 cursor-pointer" onClick={(e) => changeDegreesF(e)}>
-                Imperial: °F, mph
-              </div> */}
+              <Degree names={names} mapPosition={mapPosition} setData={setData} setForecast={setForecast} />
             </div>
           </div>
         </div>
@@ -137,32 +138,19 @@ useEffect(() => {
             </div>
             <div>
               <div className="relative">
-                {/* <MapWithNoSSR mapRef={mapRef} position={mapPosition} /> */}
+                <MapWithNoSSR mapRef={mapRef} position={mapPosition} />
               </div>
             </div>
           </div>
           <div className="grid grid-cols-[minmax(0,5fr)_minmax(0,4fr)] gap-4 mt-4">
             <div>
               <div className='text-xl font-bold'>Hourly forecast</div>
-              {/* <Line options={options} data={dataes} /> */}
+            <Charts/>
             </div>
             <div>
               <div className='text-xl font-bold'>8-day forecast</div>
               <ul>
-                {forecast?.list?.splice(0, 7).map((item, id) => (
-                  <>
-                    <li className="flex justify-between items-center">
-                      {/* <div key={id}>{forecastDays[id]}</div> */}
-                      <div className="flex justify-between items-center basis-4/6">
-                        <div className="flex justify-start items-center" >
-                          <img src={`icons/${item.weather[0].icon}.png`} alt="weather" className="w-12" />
-                          <span>{Math.round(item.main.temp_max)}°C /{Math.round(item.main.temp_min)}°C</span>
-                        </div>
-                        <div>{item.weather[0].description}</div>
-                      </div>
-                    </li>
-                  </>
-                 ))} 
+              <Forecasts forecast={forecast} forecastDays={forecastDays}/>
               </ul>
             </div>
           </div>

@@ -70,3 +70,8 @@ export interface Props {
     setMapPosition: any,
     mapRef: any
   }
+
+  export interface ForecastProps {
+    forecast: Forecast,
+    forecastDays: string[]
+  }
