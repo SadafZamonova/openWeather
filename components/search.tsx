@@ -144,7 +144,7 @@ const Search = (initialState: any,) => {
             </div>
             <span className="text-xs bg-#ececed w-40 pt-2 mr-4 pl-6 ml-4">Different Weather?</span>
             <div className="flex flex-row bg-#ececed relative">
-              <div id="selected" className="absolute bg-white "></div>
+              
               <Degree names={names} mapPosition={mapPosition} setData={setData} setForecast={setForecast} />
             </div>
           </div>
