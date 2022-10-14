@@ -20,10 +20,7 @@ const Charts = () => {
             legend: {
                 position: 'top' as const,
             },
-            title: {
-                display: true,
-                text: 'Chart.js Line Chart',
-            },
+           
         },
     };
 
@@ -42,7 +39,7 @@ const Charts = () => {
 
 
     return (
-        <Line options={options} data={dataes} />
+        <Line options={options} data={dataes} height={420} width={600} />
     )
 }
 

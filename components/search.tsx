@@ -24,6 +24,7 @@ const Search = (initialState: any,) => {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<WeatherData>(initialState);
   const [forecast, setForecast] = useState<Forecast>(initialState)
+  const [hourly, setHourly] = useState()
   const [mapPosition, setMapPosition] = useState<{ lat: number, lng: number }>({
     lat: 0,
     lng: 0
@@ -56,6 +57,20 @@ const Search = (initialState: any,) => {
         },
       }
       )
+
+      const reshour = await weatherApi.get('/forecast?', {
+        params: {
+          q: names,
+          lat: lat,
+          lon: lng,
+          units: 'metric',
+          appid: appId,
+          exclude: 'hourly'
+        },
+      }
+      )
+
+      console.log(reshour.data)
       zeroTimeZone = res.data.timezone;
       zeroVisibility = res.data.visibility;
       setData(res.data)
