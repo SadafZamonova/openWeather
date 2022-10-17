@@ -2,7 +2,7 @@ import { useRouter } from 'next/router'
 import { useState, useEffect , useRef, MouseEvent, } from 'react';
 import dynamic from "next/dynamic";
 import weatherApi from '../axios';
-import { WeatherData,  Forecast } from '../types';
+import { WeatherData,  Forecast, Hourly } from '../types';
 import { appId } from '../appId/appId';
 import { Map } from "leaflet";
 import MyLocation from '../components/myLocation';
@@ -20,6 +20,7 @@ export default function Page(initialState: any) {
   const [data, setData] = useState<WeatherData>(initialState);
   const [names, setNames] = useState('');
   const [forecast, setForecast] = useState<Forecast>(initialState)
+  const [hourly, setHourly] = useState<Hourly>(initialState)
   const [mapPosition, setMapPosition] = useState<{ lat: number, lng: number }>({
     lat: 0,
     lng: 0
@@ -145,7 +146,7 @@ useEffect(() => {
           <div className="grid grid-cols-[minmax(0,5fr)_minmax(0,4fr)] gap-4 mt-4">
             <div>
               <div className='text-xl font-bold'>Hourly forecast</div>
-            <Charts/>
+            <Charts  hourly={hourly}  />
             </div>
             <div>
               <div className='text-xl font-bold'>8-day forecast</div>
