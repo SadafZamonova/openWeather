@@ -29,7 +29,6 @@ const Charts = ({hourly}:HourlyProps) => {
         labels: hourly?.list?.splice(0,10).map((item) => item.weather[0].description),
         datasets: [
             {
-                
                 data:  hourly?.list?.splice(0,10).map((item) => item.main.temp),
                 borderColor: 'rgb(255, 99, 132)',
                 backgroundColor: 'rgba(255, 99, 132, 0.5)',

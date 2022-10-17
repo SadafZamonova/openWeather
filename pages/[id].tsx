@@ -53,9 +53,9 @@ export default function Page(initialState: any) {
         }
       })
       console.log(res)
-      setData(res.data)
-      setForecast(resp.data)
-      setHourly(reshour.data)
+      setData(res?.data)
+      setForecast(resp?.data)
+      setHourly(reshour?.data)
     }
     if (id) {
       getData()
