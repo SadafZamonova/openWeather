@@ -31,24 +31,28 @@ const MyLocation = ({ names, setData, setForecast, setMapPosition, mapRef, setHo
             )
             const reshour = await weatherApi.get('/forecast?', {
                 params: {
-                  q: names,
-                  lat: cds.coords.latitude,
-                  lon: cds.coords.longitude,
-                  units: 'metric',
-                  appid: appId,
-                  exclude: 'hourly'
+                    q: names,
+                    lat: cds.coords.latitude,
+                    lon: cds.coords.longitude,
+                    units: 'metric',
+                    appid: appId,
+                    exclude: 'hourly'
                 },
-              }
-              )
-            zeroTimeZone = res.data.timezone;
-            setData(res.data)
-            setForecast(response.data)
-            setHourly(reshour.data)
-            setMapPosition({ lat: res.data.coord.lat, lng: res.data.coord.lon })
-            mapRef.current?.flyTo({
-                lat: res.data.coord.lat,
-                lng: res.data.coord.lon
-            })
+            }
+            )
+            zeroTimeZone = res.data?.timezone;
+            setData(res?.data)
+            setForecast(response?.data)
+            setHourly(reshour?.data)
+            if(res.data.coord.lat && res.data.coord.lon) {
+                setMapPosition({ lat: res.data.coord.lat, lng: res.data.coord.lon })
+            }
+            if (mapRef.current) {
+                mapRef.current?.flyTo({
+                    lat: res.data.coord.lat,
+                    lng: res.data.coord.lon
+                })
+            }
         }, (err) => {
             console.log("err", err)
         });
