@@ -43,6 +43,23 @@ export interface Forecast {
     list: WeatherData[]
     } 
 
+export interface Hourly {
+  city: {
+    coord: {
+    lat: number,
+    lon:number   
+    } 
+    country: string,
+    id: number,
+    name: string,
+    population: number,
+    sunrise: number, 
+    sunset: number,
+    timezone: number, }
+cnt:number,
+cod: string,
+list: WeatherData[]
+} 
 
 
 
@@ -74,4 +91,8 @@ export interface Props {
   export interface ForecastProps {
     forecast: Forecast,
     forecastDays: string[]
+  }
+
+  export interface HourlyProps {
+    hourly : Hourly
   }

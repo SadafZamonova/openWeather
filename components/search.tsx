@@ -1,5 +1,5 @@
 import { useState, useEffect, MouseEvent, useRef } from "react";
-import { WeatherData, Forecast } from "../types";
+import { WeatherData, Forecast, Hourly } from "../types";
 import dynamic from "next/dynamic";
 import weatherApi from "../axios";
 import { Map } from "leaflet";
@@ -24,7 +24,7 @@ const Search = (initialState: any,) => {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<WeatherData>(initialState);
   const [forecast, setForecast] = useState<Forecast>(initialState)
-  const [hourly, setHourly] = useState()
+  const [hourly, setHourly] = useState<Hourly>(initialState)
   const [mapPosition, setMapPosition] = useState<{ lat: number, lng: number }>({
     lat: 0,
     lng: 0
@@ -70,11 +70,13 @@ const Search = (initialState: any,) => {
       }
       )
 
-      console.log(reshour.data)
+      
       zeroTimeZone = res.data.timezone;
       zeroVisibility = res.data.visibility;
       setData(res.data)
       setForecast(response.data)
+      setHourly(reshour.data)
+      console.log(reshour.data)
       console.log(response.data)
       setMapPosition({ lat, lng })
       mapRef.current?.flyTo({
@@ -194,7 +196,7 @@ const Search = (initialState: any,) => {
           <div className="grid grid-cols-[minmax(0,5fr)_minmax(0,4fr)] gap-4 mt-4">
             <div>
               <div className='text-xl font-bold'>Hourly forecast</div>
-              <Charts />
+              <Charts hourly={hourly} />
             </div>
             <div>
               <div className='text-xl font-bold'>8-day forecast</div>

@@ -1,6 +1,7 @@
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, } from 'chart.js';
 import { faker } from '@faker-js/faker';
 import { Line } from 'react-chartjs-2';
+import {HourlyProps } from '../types';
 ChartJS.register(
     CategoryScale,
     LinearScale,
@@ -11,7 +12,7 @@ ChartJS.register(
     Legend
 );
 
-const Charts = () => {
+const Charts = ({hourly}:HourlyProps) => {
 
 
     const options = {
@@ -24,13 +25,12 @@ const Charts = () => {
         },
     };
 
-    const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
     const dataes = {
-        labels,
+        labels: hourly?.list?.splice(0,10).map((item) => item.weather[0].description),
         datasets: [
             {
-                label: 'Dataset 1',
-                data: labels.map(() => faker.datatype.number({ min: -10, max: 40 })),
+                
+                data:  hourly?.list?.splice(0,10).map((item) => item.main.temp),
                 borderColor: 'rgb(255, 99, 132)',
                 backgroundColor: 'rgba(255, 99, 132, 0.5)',
             },
