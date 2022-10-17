@@ -1,11 +1,8 @@
 import React from "react"
 
-export class ErrorBoundary extends React.Component {
+export class ErrorBoundary extends React.Component<{children: any  }> {
     constructor(props: any) {
-      super(props)
-  
-      // Define a state variable to track whether is an error or not
-      this.state = { hasError: false }
+      super(props as any)
     }
     
 
