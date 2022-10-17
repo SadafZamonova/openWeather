@@ -1,8 +1,8 @@
 import { useRouter } from 'next/router'
-import { useState, useEffect , useRef, MouseEvent, } from 'react';
+import { useState, useEffect, useRef, MouseEvent, } from 'react';
 import dynamic from "next/dynamic";
 import weatherApi from '../axios';
-import { WeatherData,  Forecast, Hourly } from '../types';
+import { WeatherData, Forecast, Hourly } from '../types';
 import { appId } from '../appId/appId';
 import { Map } from "leaflet";
 import MyLocation from '../components/myLocation';
@@ -31,23 +31,33 @@ export default function Page(initialState: any) {
   const weather = data?.weather?.length ? data.weather[0] : null;
 
 
-useEffect(() => {
+  useEffect(() => {
     const getData = async () => {
       const res = await weatherApi.get('/weather', {
-        params: { id, appId, 
+        params: {
+          id, appId,
           units: 'metric',
-    }
+        }
       })
       const resp = await weatherApi.get('/forecast?', {
-        params: { id, appId, 
+        params: {
+          id, appId,
           units: 'metric',
-    }
+        }
+      })
+      const reshour = await weatherApi.get('forecast?', {
+        params: {
+          id, appId,
+          units: 'metric',
+          exclude: 'hourly'
+        }
       })
       console.log(res)
       setData(res.data)
       setForecast(resp.data)
+      setHourly(reshour.data)
     }
-    if(id) {
+    if (id) {
       getData()
     }
   }, [id])
@@ -67,11 +77,19 @@ useEffect(() => {
           units: 'metric',
           appid: appId,
         },
+      })
+      const reshour = await weatherApi.get('/forecast?', {
+        params: {
+          q: names,
+          units: 'metric',
+          appid: appId,
+          exclude: 'hourly'
+        },
       }
       )
-      // zeroTimeZone = res.data.timezone;
       setData(res.data)
       setForecast(response.data)
+      setHourly(reshour.data)
       setMapPosition({ lat: res.data.coord.lat, lng: res.data.coord.lon })
       mapRef.current?.flyTo({
         lat: res.data.coord.lat,
@@ -106,7 +124,7 @@ useEffect(() => {
           </div>
           <div className="flex flex-row justify-end">
             <div className=" flex items-center justify-center cursor-pointer ml-24 p-2 bg-#ececed">
-            <MyLocation names={names} setMapPosition={setMapPosition} setData={setData} setForecast={setForecast} mapRef={mapRef} />
+              <MyLocation names={names} setMapPosition={setMapPosition} setData={setData} setForecast={setForecast} mapRef={mapRef} />
             </div>
             <span className="text-xs bg-#ececed w-40 pt-2 mr-4 pl-6 ml-4">Different Weather?</span>
             <div className="flex flex-row bg-#ececed relative">
@@ -146,12 +164,12 @@ useEffect(() => {
           <div className="grid grid-cols-[minmax(0,5fr)_minmax(0,4fr)] gap-4 mt-4">
             <div>
               <div className='text-xl font-bold'>Hourly forecast</div>
-            <Charts  hourly={hourly}  />
+              <Charts hourly={hourly} />
             </div>
             <div>
               <div className='text-xl font-bold'>8-day forecast</div>
               <ul>
-              <Forecasts forecast={forecast} forecastDays={forecastDays}/>
+                <Forecasts forecast={forecast} forecastDays={forecastDays} />
               </ul>
             </div>
           </div>
