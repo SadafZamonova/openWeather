@@ -9,6 +9,7 @@ import MyLocation from '../components/myLocation';
 import Degree from '../components/changeDegree';
 import Charts from '../components/chart';
 import Forecasts from '../components/forecast';
+import ErrorBoundary from '../components/ErrorBoundary';
 
 const MapWithNoSSR = dynamic(() => import("../components/map"), {
   ssr: false
@@ -104,6 +105,7 @@ export default function Page(initialState: any) {
 
 
   return (
+    <ErrorBoundary>
     <div>
       <div className="  h-full px-4 pt-5  w-full pb-5 bg-searchbg flex justify-center" >
         <div className="  h-full px-4 pt-5  pb-5  w-900 flex justify-center">
@@ -117,7 +119,7 @@ export default function Page(initialState: any) {
                 aria-describedby="button-addon2"
                 onChange={(e) => setNames(e.target.value)}
                 value={names}
-              />
+                />
               <button className="bg-black text-searchbg rounded-r-md w-20" onClick={(e) => addNames(e)} >Search</button>
 
             </div>
@@ -176,5 +178,6 @@ export default function Page(initialState: any) {
         </div>
       </div>
     </div>
+    </ErrorBoundary>
   )
 }
