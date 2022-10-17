@@ -4,9 +4,8 @@ import { MouseEvent, useState } from "react";
 import { DegreeProps } from "../types";
 
 
-const Degree = ({ names, mapPosition, setData, setForecast }: DegreeProps) => {
+const Degree = ({ names, mapPosition, setData, setForecast, setHourly }: DegreeProps) => {
   const [active, setActive] = useState(1)
-  const [ d , setD] = useState(false)
 
   const changeDegreesF = async (e: MouseEvent) => {
     try {
@@ -29,8 +28,20 @@ const Degree = ({ names, mapPosition, setData, setForecast }: DegreeProps) => {
         },
       }
       )
+      const reshour = await weatherApi.get('/forecast?', {
+        params: {
+          q: names,
+          lat: `${mapPosition.lat}`,
+          lon: `${mapPosition.lng}`,
+          units: 'metric',
+          appid: appId,
+          exclude: 'hourly'
+        },
+      }
+      )
       setData(res.data)
       setForecast(response.data)
+      setHourly(reshour.data)
       setActive(2)
     } catch (error) {
       console.log(error)
@@ -58,8 +69,20 @@ const Degree = ({ names, mapPosition, setData, setForecast }: DegreeProps) => {
         },
       }
       )
+      const reshour = await weatherApi.get('/forecast?', {
+        params: {
+          q: names,
+          lat: `${mapPosition.lat}`,
+          lon: `${mapPosition.lng}`,
+          units: 'metric',
+          appid: appId,
+          exclude: 'hourly'
+        },
+      }
+      )
       setData(res.data)
       setForecast(response.data)  
+      setHourly(reshour.data)
       setActive(1)
     } catch (error) {
       console.log(error)

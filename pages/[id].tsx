@@ -124,12 +124,12 @@ export default function Page(initialState: any) {
           </div>
           <div className="flex flex-row justify-end">
             <div className=" flex items-center justify-center cursor-pointer ml-24 p-2 bg-#ececed">
-              <MyLocation names={names} setMapPosition={setMapPosition} setData={setData} setForecast={setForecast} mapRef={mapRef} />
+              <MyLocation names={names} setMapPosition={setMapPosition} setData={setData} setForecast={setForecast} mapRef={mapRef} setHourly={setHourly} />
             </div>
             <span className="text-xs bg-#ececed w-40 pt-2 mr-4 pl-6 ml-4">Different Weather?</span>
             <div className="flex flex-row bg-#ececed relative">
               <div id="selected" className="absolute bg-white "></div>
-              <Degree names={names} mapPosition={mapPosition} setData={setData} setForecast={setForecast} />
+              <Degree names={names} mapPosition={mapPosition} setData={setData} setForecast={setForecast} setHourly={setHourly} />
             </div>
           </div>
         </div>

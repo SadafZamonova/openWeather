@@ -3,7 +3,7 @@ import { appId } from '../appId/appId'
 import { LocationProps } from "../types";
 
 let zeroTimeZone = 0;
-const MyLocation = ({ names, setData, setForecast, setMapPosition, mapRef }: LocationProps) => {
+const MyLocation = ({ names, setData, setForecast, setMapPosition, mapRef, setHourly }: LocationProps) => {
 
 
     const myLocation = async () => {
@@ -29,9 +29,21 @@ const MyLocation = ({ names, setData, setForecast, setMapPosition, mapRef }: Loc
                 },
             }
             )
+            const reshour = await weatherApi.get('/forecast?', {
+                params: {
+                  q: names,
+                  lat: cds.coords.latitude,
+                  lon: cds.coords.longitude,
+                  units: 'metric',
+                  appid: appId,
+                  exclude: 'hourly'
+                },
+              }
+              )
             zeroTimeZone = res.data.timezone;
             setData(res.data)
             setForecast(response.data)
+            setHourly(reshour.data)
             setMapPosition({ lat: res.data.coord.lat, lng: res.data.coord.lon })
             mapRef.current?.flyTo({
                 lat: res.data.coord.lat,
