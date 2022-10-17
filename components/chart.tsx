@@ -40,6 +40,9 @@ const Charts = ({hourly}:HourlyProps) => {
     console.log(dataes)
 
 
+    if(!hourly.list || !hourly.list?.length) {
+        return null
+    }
 
     return (
         <Line options={options} data={dataes} height={420} width={600} />
