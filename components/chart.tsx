@@ -37,7 +37,7 @@ const Charts = ({hourly}:HourlyProps) => {
         ],
     };
 
-    console.log(dates)
+    console.log(dataes)
 
 
 
