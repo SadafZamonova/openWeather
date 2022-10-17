@@ -46,12 +46,12 @@ const MyLocation = ({ names, setData, setForecast, setMapPosition, mapRef, setHo
             setHourly(reshour?.data)
             if(res.data.coord.lat && res.data.coord.lon) {
                 setMapPosition({ lat: res.data.coord.lat, lng: res.data.coord.lon })
-            }
-            if (mapRef.current) {
-                mapRef.current?.flyTo({
-                    lat: res.data.coord.lat,
-                    lng: res.data.coord.lon
-                })
+                if (mapRef.current) {
+                    mapRef.current?.flyTo({
+                        lat: res.data.coord.lat,
+                        lng: res.data.coord.lon
+                    })
+                }
             }
         }, (err) => {
             console.log("err", err)
