@@ -76,8 +76,6 @@ const Search = (initialState: any,) => {
       setData(res.data)
       setForecast(response.data)
       setHourly(reshour.data)
-      console.log(reshour.data)
-      console.log(response.data)
       setMapPosition({ lat, lng })
       mapRef.current?.flyTo({
         lat: lat,

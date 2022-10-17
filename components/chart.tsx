@@ -25,16 +25,18 @@ const Charts = ({hourly}:HourlyProps) => {
         },
     };
 
+
     const dataes = {
         labels: hourly?.list?.splice(0,10).map((item) => item.weather[0].description),
         datasets: [
             {
-                data:  hourly?.list?.splice(0,10).map((item) => item.main.temp),
+                data:  hourly?.list?.splice(0,10).map((item) => item.main.temp || 0) || 0,
                 borderColor: 'rgb(255, 99, 132)',
                 backgroundColor: 'rgba(255, 99, 132, 0.5)',
             },
         ],
     };
+
 
 
     return (
