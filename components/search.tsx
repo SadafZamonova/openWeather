@@ -23,6 +23,7 @@ const Search = (initialState: any,) => {
   const [names, setNames] = useState('');
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<WeatherData>(initialState);
+  const [params, setParams] = useState(initialState);
   const [forecast, setForecast] = useState<Forecast>(initialState)
   const [hourly, setHourly] = useState<Hourly>(initialState)
   const [mapPosition, setMapPosition] = useState<{ lat: number, lng: number }>({
@@ -70,7 +71,7 @@ const Search = (initialState: any,) => {
       }
       )
 
-      
+
       zeroTimeZone = res.data.timezone;
       zeroVisibility = res.data.visibility;
       setData(res.data)
@@ -145,6 +146,8 @@ const Search = (initialState: any,) => {
     return <div className="flex justify-center mt-10"><h1 className="text-white">Loading...</h1></div>
   }
 
+
+
   return (
     <div>
       <div className="  h-full px-4 pt-5  w-full pb-5 bg-searchbg flex justify-center" >
@@ -169,8 +172,8 @@ const Search = (initialState: any,) => {
             </div>
             <span className="text-xs bg-#ececed w-40 pt-2 mr-4 pl-6 ml-4">Different Weather?</span>
             <div className="flex flex-row bg-#ececed relative">
-              
-              <Degree names={names} mapPosition={mapPosition} setData={setData} setForecast={setForecast} setHourly={setHourly}/>
+
+              <Degree names={names} mapPosition={mapPosition} setData={setData} setForecast={setForecast} setHourly={setHourly} setParams={setParams} />
             </div>
           </div>
         </div>
@@ -183,9 +186,9 @@ const Search = (initialState: any,) => {
               <div className="text-2xl font-bold pb-8">{data?.name}</div>
               <div className="flex flex-row whitespace-nowrap">
                 {weather ? <img className="w-12" src={`icons/${data.weather[0].icon}.png`}></img> : null}
-                <span className="text-4xl pb-3">{Math.round(data?.main?.temp)}°C </span>
+                <span className="text-4xl pb-3">{Math.round(data?.main?.temp)} {params?.units === 'metric' ? '°C' : 'F'}</span>
               </div>
-              <div className="font-bold flex ">Feels like {Math.round(data?.main?.feels_like)} °C. {weather ? <div className="font-normal"> {weather.description}  </div> : null} </div>
+              <div className="font-bold flex ">Feels like {Math.round(data?.main?.feels_like)} {params?.units === 'metric' ? '°C' : 'F'}. {weather ? <div className="font-normal"> {weather.description}  </div> : null} </div>
               <ul className="flex flex-wrap  mt-1 mb-0 pl-4 pr-4 w-96 ">
                 <li className="flex items-center flex-nowrap mr-16">{data?.wind?.speed}m/s WNW</li>
                 <li className="flex items-center flex-nowrap  mr-16">{data?.main?.pressure}hPa</li>
@@ -209,7 +212,7 @@ const Search = (initialState: any,) => {
             <div>
               <div className='text-xl font-bold'>8-day forecast</div>
               <ul>
-                <Forecasts forecast={forecast} forecastDays={forecastDays}/>
+                <Forecasts forecast={forecast} forecastDays={forecastDays} params={params} />
               </ul>
             </div>
           </div>

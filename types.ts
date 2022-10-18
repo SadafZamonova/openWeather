@@ -78,7 +78,8 @@ export interface Props {
     mapPosition:{ lat: number, lng: number },
     setData:  any,
     setForecast: any,
-    setHourly: any
+    setHourly: any,
+    setParams: any
   }
 
   export interface LocationProps {
@@ -92,7 +93,8 @@ export interface Props {
 
   export interface ForecastProps {
     forecast: Forecast,
-    forecastDays: string[]
+    forecastDays: string[],
+    params: any
   }
 
   export interface HourlyProps {

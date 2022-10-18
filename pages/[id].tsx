@@ -15,11 +15,14 @@ const MapWithNoSSR = dynamic(() => import("../components/map"), {
   ssr: false
 });
 const WEEK_DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+
 export default function Page(initialState: any) {
   const router = useRouter()
   const id = router.query.id as string;
   const [data, setData] = useState<WeatherData>(initialState);
   const [names, setNames] = useState('');
+  const [params, setParams] = useState(initialState);
   const [forecast, setForecast] = useState<Forecast>(initialState)
   const [hourly, setHourly] = useState<Hourly>(initialState)
   const [mapPosition, setMapPosition] = useState<{ lat: number, lng: number }>({
@@ -131,7 +134,7 @@ export default function Page(initialState: any) {
             <span className="text-xs bg-#ececed w-40 pt-2 mr-4 pl-6 ml-4">Different Weather?</span>
             <div className="flex flex-row bg-#ececed relative">
               <div id="selected" className="absolute bg-white "></div>
-              <Degree names={names} mapPosition={mapPosition} setData={setData} setForecast={setForecast} setHourly={setHourly} />
+              <Degree names={names} mapPosition={mapPosition} setData={setData} setForecast={setForecast} setHourly={setHourly}  setParams={setParams}/>
             </div>
           </div>
         </div>
@@ -144,9 +147,9 @@ export default function Page(initialState: any) {
               <div className="text-2xl font-bold pb-8">{data?.name}</div>
               <div className="flex flex-row whitespace-nowrap">
                 {weather ? <img className="w-12" src={`icons/${data?.weather[0].icon}.png`}></img> : null}
-                <span className="text-4xl pb-3">{Math.round(data?.main?.temp)}°C </span>
+                <span className="text-4xl pb-3">{Math.round(data?.main?.temp)}{params?.units === 'metric' ? '°C' : 'F'} </span>
               </div>
-              <div className="font-bold flex ">Feels like {Math.round(data?.main?.feels_like)} °C. {weather ? <div className="font-normal"> {weather.description}  </div> : null} </div>
+              <div className="font-bold flex ">Feels like {Math.round(data?.main?.feels_like)}{params?.units === 'metric' ? '°C' : 'F'} {weather ? <div className="font-normal"> {weather.description}  </div> : null} </div>
 
               <ul className="flex flex-wrap  mt-1 mb-0 pl-4 pr-4 w-96 ">
                 <li className="flex items-center flex-nowrap mr-16">{data?.wind?.speed}m/s WNW</li>
@@ -171,7 +174,7 @@ export default function Page(initialState: any) {
             <div>
               <div className='text-xl font-bold'>8-day forecast</div>
               <ul>
-                <Forecasts forecast={forecast} forecastDays={forecastDays} />
+                <Forecasts forecast={forecast} forecastDays={forecastDays} params={params} />
               </ul>
             </div>
           </div>
