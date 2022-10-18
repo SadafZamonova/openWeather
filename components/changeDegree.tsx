@@ -7,7 +7,7 @@ import { DegreeProps } from "../types";
 const Degree = ({ names, mapPosition, setData, setForecast, setHourly, setParams }: DegreeProps) => {
   const [active, setActive] = useState(1)
 
-  const changeDegreesF = async (e: MouseEvent) => {
+  const changeDegreesF = async (e: MouseEvent) => { 
     try {
       const res = await weatherApi.get('/weather', {
         params: {
@@ -100,7 +100,7 @@ const Degree = ({ names, mapPosition, setData, setForecast, setHourly, setParams
       <div className={`text-xs flex-1 items-center justify-center  z-10 cursor-pointer pt-2 ${active === 1 ? 'bg-white' : ''}`} onClick={(e) => changeDegreesC(e)}>
         Metric: °C, m/s
       </div>
-      <div className={`text-xs flex-1 items-center justify-center w-36 pt-2 z-10 cursor-pointer ${active === 2 ? 'bg-white transform' : ''}`} onClick={(e) => changeDegreesF(e)}>
+      <div className={`text-xs flex-1 items-center justify-center w-36 pt-2 z-10 cursor-pointer ${active === 2 ? 'bg-white ' : ''}`} onClick={(e) => changeDegreesF(e)}>
         Imperial: °F, mph
       </div>
     </>

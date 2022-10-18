@@ -34,10 +34,11 @@ const Search = (initialState: any,) => {
 
 
   useEffect(() => {
-    navigator.geolocation?.getCurrentPosition(async (cds) => {
+   
+    navigator.geolocation.getCurrentPosition(async (cds) => {
       const lat = cds.coords.latitude;
       const lng = cds.coords.longitude;
-      setLoading(true)
+       setLoading(true)
       const res = await weatherApi.get('/weather', {
         params: {
           q: names,
@@ -77,6 +78,8 @@ const Search = (initialState: any,) => {
       setData(res.data)
       setForecast(response.data)
       setHourly(reshour.data)
+      setParams(res.config.params)
+      console.log(res)
       setMapPosition({ lat, lng })
       mapRef.current?.flyTo({
         lat: lat,
@@ -143,7 +146,7 @@ const Search = (initialState: any,) => {
   const forecastDays = WEEK_DAYS.slice(dayInAWeek, WEEK_DAYS.length).concat(WEEK_DAYS.slice(0, dayInAWeek));
 
   if (loading) {
-    return <div className="flex justify-center mt-10"><h1 className="text-white">Loading...</h1></div>
+    return <div className="flex justify-center mt-10"><h1 className="text-red-700 text-3xl">Loading...</h1></div>
   }
 
 

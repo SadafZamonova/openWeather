@@ -60,6 +60,7 @@ export default function Page(initialState: any) {
       setData(res?.data)
       setForecast(resp?.data)
       setHourly(reshour?.data)
+      setParams(res.config.params)
     }
     if (id) {
       getData()
