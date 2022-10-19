@@ -100,3 +100,7 @@ export interface Props {
   export interface HourlyProps {
     hourly : Hourly
   }
+
+  export interface SearchProps {
+    onSearchChange: any
+  }

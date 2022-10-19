@@ -1,10 +1,10 @@
 import ErrorBoundary from '../components/ErrorBoundary'
-import Search from '../components/search'
+import Weather from '../components/weather'
 
 export default function Home() {
   return (
     <ErrorBoundary>
-   <Search />
+   <Weather/>
     </ErrorBoundary>
   )
 }

@@ -20,7 +20,8 @@
     "react-charts": "^3.0.0-beta.50",
     "react-dom": "18.2.0",
     "react-leaflet": "^4.0.2",
-    "react-resizable": "^3.0.4"
+    "react-resizable": "^3.0.4",
+    "react-select-async-paginate": "^0.7.0"
   },
   "devDependencies": {
     "@faker-js/faker": "^7.5.0",
