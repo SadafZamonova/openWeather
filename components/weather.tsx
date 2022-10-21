@@ -152,15 +152,7 @@ const Weather = (initialState: any,) => {
 
 
 const handleOnSearchChange = async (searchData: any) => {
-// return (
-//   await weatherApi.get('/weather', {
-//     params: {
-//       q: searchData,
-//       units: 'metric',
-//       appid: appId,
-//     },
-//   })
-// )
+console.log(searchData)
 }
 
 
@@ -170,7 +162,7 @@ const handleOnSearchChange = async (searchData: any) => {
         <div className="  h-full px-4 pt-5  pb-5  w-900 flex justify-center">
           <div className=" h-full w-full ">
             <div className="input-group relative flex items-stretch w-full ">
-             <Search onSearchChange={handleOnSearchChange}/>
+             <Search addNames={addNames} setNames={setNames} names={names}/>
               <button className="bg-black text-searchbg rounded-r-md w-20" onClick={(e) => addNames(e)} >Search</button>
             </div>
           </div>

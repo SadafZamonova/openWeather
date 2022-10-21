@@ -1,52 +1,56 @@
-import { SetStateAction, useState } from "react";
-import { AsyncPaginate } from "react-select-async-paginate";
-import { appId } from "../appId/appId";
-import weatherApi from "../axios";
-import { SearchProps } from "../types";
+import Link from 'next/link';
+import React, { useState } from 'react'
+import cities from '../lib/city.list.json'
+import { AddNamesProps, Cities } from '../types';
 
+export default function Search({addNames, setNames, names}:AddNamesProps) {
+  const [results, setResults] = useState<Cities[]>([]);
 
-const Search = ({ onSearchChange }: SearchProps) => {
+  const onChange = (e: any) => {
+    const { value } = e.target;
+    setNames(value);
 
-    const [search, setSearch] = useState(null);
-    const loadOptions = async (inputValue: string) => {
+    let matchingCities: any = [];
 
-        const res = await weatherApi.get('/weather', {
-            params: {
-                q: inputValue,
-                units: 'metric',
-                appid: appId,
-            },
-        })
-        const responseJSON = {
-            results: [
-              {
-                value: 1,
-                label: "Java"
-              }
-            ],
-          };
-    
-          return {
-            options: responseJSON.results
-          }
-
+    if (value.length > 3) {
+      for (let city of cities) {
+        if (matchingCities.length >= 5) {
+          break;
+        }
+        const match = city.name.toLowerCase().startsWith(value.toLowerCase())
+        if (match) {
+          matchingCities.push(city);
+        }
+      }
     }
 
-    const handleOnChange = (searchData: SetStateAction<null>) => {
-        setSearch(searchData);
-        onSearchChange(searchData)
-    }
+    return setResults(matchingCities)
+  };
 
-    return (
-        <AsyncPaginate
-            className="form-control relative flex-auto w-full min-w-0 block  text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
-            placeholder='Search for city'
-            debounceTimeout={600}
-            value={search}
-            // onChange={handleOnChange}
-            loadOptions={loadOptions} />
-    )
 
+
+  
+  return (
+    <div>
+      <input type='text' value={names} onChange={onChange} />
+      {names.length > 3 && (
+        <ul>
+          {results.length > 0 ? (
+            results.map((city, index) => (
+              <li key={index}>
+                <div onClick={(e) => addNames(e)}>
+                    {city.name}
+                    {city.state ? `, ${city.state}` : ''}
+                    <span >({city.country})</span>
+                </div>
+              </li>
+            ))
+          ) : (
+            <li>no result</li>
+          )}
+        </ul>
+      )}
+    </div>
+  )
 }
-export default Search;
 

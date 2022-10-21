@@ -104,3 +104,35 @@ export interface Props {
   export interface SearchProps {
     onSearchChange: any
   }
+
+  export interface OptionsProps {
+    city: string,
+    country: string,
+    countryCode: string,
+    id: number,
+    latitude: number,
+    longitude: number,
+    name: string,
+    population: number,
+    region: string,
+    regionCode: string,
+    type: string,
+    wikiDataID: string
+  }
+  export interface AddNamesProps {
+    addNames: any,
+    setNames: any,
+    names: string
+  }
+
+  export interface Cities {
+    id: number,
+    name: string,
+    state: string,
+    country: string,
+    coord: {
+      lon: number,
+      lat: number,
+    }
+
+  }
