@@ -37,8 +37,6 @@ const Charts = ({hourly}:HourlyProps) => {
         ],
     };
 
-    console.log(dataes)
-
 
     if(!hourly.list || !hourly.list?.length) {
         return null

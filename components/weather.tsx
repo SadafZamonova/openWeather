@@ -151,10 +151,6 @@ const Weather = (initialState: any,) => {
   }
 
 
-const handleOnSearchChange = async (searchData: any) => {
-console.log(searchData)
-}
-
 
   return (
     <div>
