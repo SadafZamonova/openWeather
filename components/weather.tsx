@@ -60,7 +60,6 @@ const Weather = (initialState: any,) => {
         },
       }
       )
-
       const reshour = await weatherApi.get('/forecast?', {
         params: {
           q: names,
@@ -72,8 +71,6 @@ const Weather = (initialState: any,) => {
         },
       }
       )
-
-
       zeroTimeZone = res.data.timezone;
       zeroVisibility = res.data.visibility;
       setData(res.data)
@@ -128,10 +125,12 @@ const Weather = (initialState: any,) => {
         lat: res.data.coord.lat,
         lng: res.data.coord.lon
       })
+
     } catch (error) {
       console.log(error)
     }
     setNames((e.target as HTMLInputElement).value)
+    
   }
 
   const visibility = zeroVisibility / 1000;

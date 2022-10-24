@@ -35,8 +35,8 @@ export default function Search({ addNames, setNames, names }: AddNamesProps) {
       {names.length > 3 && (
         <ul   className='absolute pt-1 rounded-lg w-full m-0 border-2 border-solid border-inherit bg-white'>
           {results.length > 0 ? (
-            results.map((city, index) => (
-              <li onClick={(e) => addNames(e)}  className="hover:cursor-pointer" key={index}>
+            results.map((city) => (
+              <li onClick={(e) => addNames(e)}  className="hover:cursor-pointer" >
                     {city.name}
                     {city.state ? `, ${city.state}` : ''}
                     <span >({city.country})</span>
