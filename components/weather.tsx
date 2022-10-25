@@ -89,7 +89,7 @@ const Weather = (initialState: any,) => {
   }, [])
 
 
-  const handleSearchCityClick = async (value?: string, e : any) => {
+  const handleSearchCityClick = async (value?: string) => {
     try {
       let nameInput = value || input
       const res = await weatherApi.get('/weather', {
@@ -156,7 +156,7 @@ const Weather = (initialState: any,) => {
           <div className=" h-full w-full ">
             <div className="input-group relative flex items-stretch w-full ">
              <Search handleSearchCityClick={handleSearchCityClick} setNames={setInput} names={input}/>
-              <button className="bg-black text-searchbg rounded-r-md w-20" onClick={(e) => handleSearchCityClick(e)} >Search</button>
+              <button className="bg-black text-searchbg rounded-r-md w-20" onClick={() => handleSearchCityClick()} >Search</button>
             </div>
           </div>
           <div className="flex flex-row justify-end">
