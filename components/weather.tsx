@@ -21,7 +21,7 @@ let zeroVisibility = 0;
 
 
 const Weather = (initialState: any,) => {
-  const [names, setNames] = useState('');
+  const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<WeatherData>(initialState);
   const [params, setParams] = useState(initialState);
@@ -34,15 +34,14 @@ const Weather = (initialState: any,) => {
   const mapRef = useRef<Map | null>(null)
 
 
-  useEffect(() => {
-   
+  useEffect(() => { 
     navigator.geolocation.getCurrentPosition(async (cds) => {
       const lat = cds.coords.latitude;
       const lng = cds.coords.longitude;
        setLoading(true)
       const res = await weatherApi.get('/weather', {
         params: {
-          q: names,
+          q: input,
           lat: lat,
           lon: lng,
           units: 'metric',
@@ -52,7 +51,7 @@ const Weather = (initialState: any,) => {
       )
       const response = await weatherApi.get('/forecast?', {
         params: {
-          q: names,
+          q: input,
           lat: lat,
           lon: lng,
           units: 'metric',
@@ -62,7 +61,7 @@ const Weather = (initialState: any,) => {
       )
       const reshour = await weatherApi.get('/forecast?', {
         params: {
-          q: names,
+          q: input,
           lat: lat,
           lon: lng,
           units: 'metric',
@@ -90,18 +89,19 @@ const Weather = (initialState: any,) => {
   }, [])
 
 
-  const addNames = async (e: MouseEvent) => {
+  const handleSearchCityClick = async (value?: string, e : any) => {
     try {
+      let nameInput = value || input
       const res = await weatherApi.get('/weather', {
         params: {
-          q: names,
+          q: nameInput,
           units: 'metric',
           appid: appId,
         },
       })
       const response = await weatherApi.get('/forecast?', {
         params: {
-          q: names,
+          q: nameInput,
           units: 'metric',
           appid: appId,
         },
@@ -109,7 +109,7 @@ const Weather = (initialState: any,) => {
       )
       const reshour = await weatherApi.get('/forecast?', {
         params: {
-          q: names,
+          q: nameInput,
           units: 'metric',
           appid: appId,
           exclude: 'hourly'
@@ -125,12 +125,10 @@ const Weather = (initialState: any,) => {
         lat: res.data.coord.lat,
         lng: res.data.coord.lon
       })
-
     } catch (error) {
       console.log(error)
-    }
-    setNames((e.target as HTMLInputElement).value)
-    
+    } 
+    setInput('')
   }
 
   const visibility = zeroVisibility / 1000;
@@ -157,18 +155,18 @@ const Weather = (initialState: any,) => {
         <div className="  h-full px-4 pt-5  pb-5  w-900 flex justify-center">
           <div className=" h-full w-full ">
             <div className="input-group relative flex items-stretch w-full ">
-             <Search addNames={addNames} setNames={setNames} names={names}/>
-              <button className="bg-black text-searchbg rounded-r-md w-20" onClick={(e) => addNames(e)} >Search</button>
+             <Search handleSearchCityClick={handleSearchCityClick} setNames={setInput} names={input}/>
+              <button className="bg-black text-searchbg rounded-r-md w-20" onClick={(e) => handleSearchCityClick(e)} >Search</button>
             </div>
           </div>
           <div className="flex flex-row justify-end">
             <div className=" flex items-center justify-center cursor-pointer ml-24 p-2 bg-#ececed">
-              <MyLocation names={names} setMapPosition={setMapPosition} setData={setData} setForecast={setForecast} mapRef={mapRef} setHourly={setHourly} />
+              <MyLocation names={input} setMapPosition={setMapPosition} setData={setData} setForecast={setForecast} mapRef={mapRef} setHourly={setHourly} />
             </div>
             <span className="text-xs bg-#ececed w-40 pt-2 mr-4 pl-6 ml-4">Different Weather?</span>
             <div className="flex flex-row bg-#ececed relative">
 
-              <Degree names={names} mapPosition={mapPosition} setData={setData} setForecast={setForecast} setHourly={setHourly} setParams={setParams} />
+              <Degree names={input} mapPosition={mapPosition} setData={setData} setForecast={setForecast} setHourly={setHourly} setParams={setParams} />
             </div>
           </div>
         </div>

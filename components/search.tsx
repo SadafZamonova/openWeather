@@ -1,17 +1,21 @@
 import Link from 'next/link';
 import React, { useState } from 'react'
 import cities from '../lib/city.list.json'
-import { AddNamesProps, Cities } from '../types';
+import { InputSearchProps, Cities } from '../types';
 
-export default function Search({ addNames, setNames, names }: AddNamesProps) {
+export default function Search({ handleSearchCityClick, setNames, names }: InputSearchProps) {
   const [results, setResults] = useState<Cities[]>([]);
+  const [hint, setHint] = useState("")
+
   const onChange = (e: any) => {
     const { value } = e.target;
     setNames(value);
+    setHint(value)
     let matchingCities: any = [];
+
     if (value.length > 3) {
-      for (let city of cities) {
-        if (matchingCities.length >= 5) {
+      for (let city of cities as any[]) {
+        if (matchingCities.length > 5) {
           break;
         }
         const match = city.name.toLowerCase().startsWith(value.toLowerCase());
@@ -20,7 +24,8 @@ export default function Search({ addNames, setNames, names }: AddNamesProps) {
         }
       }
     }
-    return setResults(matchingCities)
+    setResults(matchingCities)
+
   };
 
   return (
@@ -32,14 +37,18 @@ export default function Search({ addNames, setNames, names }: AddNamesProps) {
         onChange={onChange}
       />
 
-      {names.length > 3 && (
-        <ul   className='absolute pt-1 rounded-lg w-full m-0 border-2 border-solid border-inherit bg-white'>
-          {results.length > 0 ? (
-            results.map((city) => (
-              <li onClick={(e) => addNames(e)}  className="hover:cursor-pointer" >
-                    {city.name}
-                    {city.state ? `, ${city.state}` : ''}
-                    <span >({city.country})</span>
+      {hint.length > 3 && (
+        <ul className='absolute pt-1 rounded-lg w-full m-0 border-2 border-solid border-inherit bg-white'>
+          {results.length >= 0 ? (
+            results.map((city, index) => (
+              <li key={`${city}_${index}`} onClick={(e) => {
+                setNames(city.name)
+                setHint('')
+                handleSearchCityClick(city.name)
+              }} className="hover:cursor-pointer">
+                {city.name}
+                {city.state ? `, ${city.state}` : ''}
+                <span>({city.country})</span>
               </li>
             ))
           ) : (

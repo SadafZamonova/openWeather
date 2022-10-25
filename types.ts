@@ -119,9 +119,9 @@ export interface Props {
     type: string,
     wikiDataID: string
   }
-  export interface AddNamesProps {
-    addNames: any,
-    setNames: any,
+  export interface InputSearchProps {
+    handleSearchCityClick: any
+    setNames: any
     names: string
   }
 
